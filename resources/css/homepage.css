@@ -1,0 +1,199 @@
+/* font */
+@import url(https://fonts.googleapis.com/css?family=Oleo%20Script);
+@import url(https://fonts.googleapis.com/css?family=Inter);
+.app {
+    font-family: 'inter';
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    background-color: #fff;
+    border-bottom: 5px solid #000;
+}
+
+/* .logo{
+    
+} */
+
+.title {
+    font-family: 'Oleo Script';
+    font-size: 3.2rem;
+}
+
+.noti-login{
+    display: flex;
+    gap: 20px;
+}
+
+.noti button{
+    background-color: #fff;
+    padding: 0;
+    border: none;
+}
+
+.icon-bell {
+    color: #fff;
+    stroke: #000; 
+    stroke-width: 70px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.login-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #000;
+    font-size: 1.4rem;
+}
+
+.icon-user {
+    width: 25px;
+    height: 25px;
+    color: #000;
+}
+
+.main {
+    padding: 10px;
+}
+
+.top-grid {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 30px;
+    overflow-x: auto;
+    padding: 10px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #f2f2f2 transparent;
+}
+
+.top-grid-card {
+    min-width: 230px;
+    min-height: 210px;
+    background-color: #ccc;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+}
+
+.top-grid-card:hover {
+    background-color: #e0e0e0;
+    cursor: pointer;
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
+
+.function-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); 
+    gap: 50px;
+    margin: 20px 0;
+}
+
+.function-card button {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 35px;
+    border: none;
+    border-radius: 8px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.function-card-icon {
+    font-size: 18px;
+    color:transparent;
+    stroke: black;
+    stroke-width: 40px;
+}
+
+.function-card span{
+    color: #000;
+}
+
+.function-card-Ontap {
+   background: linear-gradient(135deg, #DB9FE7, #A0E5CB);
+}
+
+.function-card-ThiThu {
+    background: linear-gradient(135deg, #A0E5CB, #FF98C6);
+}
+
+.function-card-GhiNho {
+    background: linear-gradient(135deg, #FF98C6, #DB9FE7);
+}
+
+.function-card-GiaiTri {
+    background: linear-gradient(135deg, #DB9FE7, #A0E5CB);
+}
+
+.function-card-Room {
+    background: linear-gradient(135deg, #A0E5CB, #FF98C6);
+}
+
+.function-card-DatLich {
+    background: linear-gradient(135deg, #FF98C6, #DB9FE7);
+}
+
+.bottom-grid {
+    display: grid;
+    grid-template-areas:
+        "large small";
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.large-card {
+    grid-area: large;
+    height: 250px; /*chiều cao cố định của grid */
+    background-color: #ccc;
+    font-size: 1.5rem;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 transparent;
+    text-align:start;
+    position: relative;
+}
+
+.small-card-container {
+    position: relative;
+    height: 250px;    /*chiều cao cố định của grid */
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #f2f2f2 transparent;
+}
+
+.small-card {
+    position: absolute;
+    background-color: #ccc;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    width: 99%;
+    height: 200px;    /*chiều cao cố định của grid */
+    cursor: pointer;
+}
+
+.small-card:nth-child(1) {
+    top: 0;
+}
+
+.small-card:nth-child(2) {
+    top: 210px; 
+}
+
+.card-content{
+    position:absolute;
+    bottom: 10px;
+    left: 0;
+    text-align: start;
+    font-size: 20px;
+    background-color: #aaa;
+    width: 80%;
+    height: 20%;
+}

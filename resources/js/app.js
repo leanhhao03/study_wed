@@ -1,10 +1,5 @@
 import { createApp } from 'vue';
-import ExampleComponent from './components/ExampleComponent.vue';
+import homepage from './components/homepage.vue';
+import '../css/homepage.css';
 
-const app = createApp({
-    components: {
-        ExampleComponent
-    }
-});
-
-app.mount('#app');
+createApp(homepage).mount('#app');
