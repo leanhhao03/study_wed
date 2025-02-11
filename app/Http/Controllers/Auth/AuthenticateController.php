@@ -19,24 +19,35 @@ class AuthenticateController extends Controller
     public function LoginUser(Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'us_name' => 'required|email|',
-            'us_password' => 'required|min:6'
+            'email' => 'required|email|',
+            'password' => 'required|min:6'
         ]);
 
         if($validate->fails()){
             return response()->json(['errors' => $validate->errors()],422); 
         }
         
+        $credentials = $request->only(['email', 'password']);
      
-            if(!Auth::attempt([
-                'us_name' => $request -> us_name,
-                'us_password' => $request -> us_password
-            ])) {
+            if(Auth::attempt($credentials)) {
+                $request->session()->put('user', Auth::user());
+                return response()->json(['message' => 'đăng nhập thành công'],200);
+            
+            }
                 throw ValidationException::withMessages([
                     'msg' => 'Email or password invalid'
                 ]);
-            }
           
-        return response()->json(['message' => 'Đăng nhập thành công'],422);  
+        return response()->json(['message' => 'Đăng nhập thành công'],200);  
+    }
+
+    //logout seesion user
+    public function LogoutUser(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return response()->json(['message' => 'Đăng xuất thành công'], 200);
     }
 }

@@ -4,32 +4,26 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
+return new class extends Migration {
     public function up(): void
     {
-        Schema::create('user', function (Blueprint $table) {
-            $table->id('Us_id');
-            $table->string('us_name');
-            $table->string('us_email')->unique();
-            $table->string('us_password');
+        Schema::create('users', function (Blueprint $table) {
+            $table->id(); 
+            $table->string('name'); 
+            $table->string('email')->unique();
+            $table->string('password'); 
             $table->timestamp('email_verified_at')->nullable();
-            $table->enum('us_role', ['student', 'admin']) -> default('student');
-            $table-> enum('us_gender', ['male', 'female', 'other'])->nullable();
-            $table->date('us_date_of_birth')->nullable();
-            $table->binary('us_pic')->nullable();
+            $table->tinyInteger('role')->default(0); 
+            $table->string('gender')->nullable(); 
+            $table->date('date_of_birth')->nullable();
+            $table->string('profile_picture')->nullable(); // Lưu đường dẫn ảnh
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('user');
+        Schema::dropIfExists('users');
     }
 };
+

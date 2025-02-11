@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('document', function (Blueprint $table) {
             $table->id('Dcm_id');
             $table->string('dcm_title');
-            $table->string('dcm_description');
-            $table->string('dcm_file_path');
+            $table->text('dcm_description');
+            $table->text('dcm_file_path');
             $table->unsignedBigInteger('us_id');
             $table->timestamps();
 
             //foreign key
-            $table->foreign('us_id')->references('Us_id')->on('user');
+            $table->foreign('us_id')->references('id')->on('users');
         });
     }
 

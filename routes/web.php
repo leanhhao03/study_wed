@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticateController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use Illuminate\Session\Middleware\StartSession;
+
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
 
@@ -12,9 +15,17 @@ Route::get('/', function () {
 })->name('home');
 
 // Route cho trang đăng nhập
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+Route::get('/login', function(){
+    return view('Login');
+})->name('login')->middleware('web');
+//Route cho trang đăng ký
+Route::get('/register', function () {
+    return view('register');
+});
 
-// Route để xử lý yêu cầu đăng nhập
+//logout
+Route::post('/logout', [AuthenticateController::class, 'LogoutUser'])->middleware('auth'); 
+
+
+
 

@@ -1,4 +1,5 @@
-<?php
+<?php 
+
 
 namespace App\Http\Controllers\Auth;
 
@@ -9,33 +10,29 @@ use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
-
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function register(Request $request)
     {
+        // dd($request->all());
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|comfirmed',
+            'password' => 'required|min:6|confirmed',
         ]);
 
-        if($validate->fails()){
-            return response()->json(['errors' => $validate->errors()],422); 
-        }
-        
-        try {
-            User::created([
-                'us_name' => $request->name,
-                'us_email' => $request->email,
-                'us_password' => bcrypt($request->password),
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json(['message' => 'Đăng ký thất bại'],422);  
+        if ($validate->fails()) {
+            return response()->json(['errors' => $validate->errors()], 422);
         }
 
-        return response()->json(['message' => 'Đăng ký thành công'],422);  
-    }
+        try {
+            User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Đăng ký thất bại', 'error' => $e->getMessage()], 500);
+        }
+
+        return response()->json(['message' => 'Đăng ký thành công'], 201);
+     }
 }
