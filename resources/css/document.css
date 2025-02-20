@@ -1,0 +1,246 @@
+@import url(https://fonts.googleapis.com/css?family=Oleo%20Script);
+@import url(https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap);
+
+#document {
+  font-family: 'Comfortaa';
+}
+
+/* Header */
+#document .header {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: #fff;
+  border-bottom: 5px solid #000;
+}
+
+/* Document Menu */
+.document-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.document-menu .logo-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  transition: opacity 0.3s;
+}
+
+.document-menu .logo-button:hover {
+  opacity: 0.7;
+}
+
+.document-menu .dropdown-menu {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  padding: 8px 0;
+  width: 120px;
+}
+
+.document-menu .menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.document-menu .menu-item:hover {
+  background: #f4f4f4;
+}
+
+/* Title */
+#document .title {
+  font-family: 'Oleo Script';
+  font-size: 3.2rem;
+  display: flex;
+  justify-content: center;
+  width: 89%;
+  padding-right: 35px;
+}
+
+.document-title {
+  position: absolute;
+  display: flex;
+  width: 80%;
+  left: 10%;
+  justify-content: center;
+  padding: 15px;
+  font-size: 1.5rem;
+}
+
+/* Document Layout */
+.document-container {
+  display: grid;
+  grid-template-columns: 1fr 4fr 1fr;
+  gap: 30px;
+  height: 100%;
+  padding: 60px 10px 5px;
+  background: linear-gradient(120deg, #FBD0D9 20%, #C3EBEA 80%);
+}
+
+/* Scrollbar Customization */
+.document-container .left-container,
+.document-container .right-container {
+  height: 80vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  padding: 10px;
+}
+
+/* Sidebar Menu Items */
+.left-menu .menu-item {
+  background: transparent;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.5 ease;
+  position: relative;
+  transition: ease-in-out 0.5s;
+  border: 2px ;
+}
+.left-menu .menu-item.content {
+  border-radius: 5px;
+  background: #171717;
+  width: 186px;
+  height: 250px;
+  z-index: 1;
+  padding: 20px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.left-menu .menu-item:hover {
+  color: rgb(255, 255, 255);
+  box-shadow: inset 0 -100px 0 0 #d87ef6;
+}
+
+.left-menu .menu-item:active {
+  transform: scale(0.9);
+}
+
+.right-menu .menu-item {
+  background-color: #C0BABA;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  cursor: pointer;
+  height: 150px;
+  position: relative;
+  color: #222;
+  transition: 1s, color 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.right-menu .menu-item:hover {
+  background-color: white;
+  transform: scale(1.01);
+  box-shadow: 10px 10px 15px #f67eaa,
+              -10px -10px 15px #a1bdff;
+  color: #222;
+}
+
+.right-menu .menu-item:focus,
+.right-menu .menu-item:hover {
+  color: #000;
+}
+
+.right-menu .menu-item:focus:after,
+.right-menu .menu-item:hover:after {
+  width: 100%;
+  left: 0%;
+}
+
+.right-menu .menu-item:after {
+  content: "";
+  pointer-events: none;
+  bottom: -2px;
+  left: 50%;
+  position: absolute;
+  width: 0%;
+  height: 6px;
+  background: linear-gradient(135deg, #d87ef6, #a1bdff);
+  transition: width 400ms cubic-bezier(0.25, 0.8, 0.25, 1), left 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Document Content */
+.document-area {
+  background: #C0BABA;
+  border-radius: 8px;
+  display: flex;
+  padding: 20px;
+  overflow-y: auto;
+  scrollbar-color: #f2f2f2 transparent;
+}
+
+.document-area .document-content {
+  font-size: 18px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.right-menu .menu-item {
+  border: 1px solid #ddd;
+  height: 175px;
+}
+
+.left-menu .menu-item:hover,
+.right-menu .menu-item:hover {
+  background: #e0e0e0;
+}
+
+/* Document Content */
+.document-area {
+  background: #C0BABA;
+  border-radius: 8px;
+  display: flex;
+  padding: 20px;
+  overflow-y: auto;
+  scrollbar-color: #f2f2f2 transparent;
+}
+
+.document-area .document-content {
+  font-size: 18px;
+  text-align: center;
+}
+
+.preview-image {
+  width: 100%;
+  max-height: 150px;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.right-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.menu-item {
+  border: 1px solid #f0f0f0;
+  padding: 5px;
+  border-radius: 8px;
+  background-color: #fff;
+}
+.pdf-viewer {
+  width: 100%;
+  height: 100vh;
+  -ms-overflow-style: none; 
+  border: none;
+}

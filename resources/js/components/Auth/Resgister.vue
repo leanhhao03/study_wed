@@ -1,129 +1,144 @@
 <template>
-    <div class="register-container">
-      <h2>Đăng ký</h2>
-      <form @submit.prevent="handleRegister">
-        <div class="form-group">
-          <label for="username">Tên đăng nhập</label>
-          <input type="text" id="username" v-model="form.username" required>
-          <div v-if="errors.username" class="error">{{ errors.username }}</div>
+      <div id="register">
+        <header class="header">
+          <div class="logo">Logo</div>
+          <div class="title">Thinksync</div>
+          <div class="home-return">
+            <a href="./">
+              <FontAwesomeIcon :icon="['fas', 'home']" class="icon-home" />
+              Trang chủ
+            </a>
+          </div>
+        </header>
+    
+        <div class="main-container">
+          <h2>ĐĂNG KÝ</h2>
+          <div class="register-container">
+            <div class="e-card playing">
+              <div class="image"></div>
+              <div class="wave"></div>
+              <div class="wave"></div>
+              <div class="wave"></div>
+              <div class="infotop"></div>
+            </div>
+            <form @submit.prevent="handleRegister">
+              <div class="input-group">
+                <label for="email">Gmail:</label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  v-model="formData.email" 
+                  name="email" 
+                  required 
+                />
+              </div>
+  
+              <div class="input-group">
+                <label for="name">Tên người dùng:</label>
+                <input 
+                  type="text" 
+                  id="name" 
+                  v-model="formData.name" 
+                  name="name" 
+                  required 
+                />
+              </div>
+  
+              <div class="input-group">
+                  <label for="password">Mật khẩu:</label>
+                  <div class="password-container">
+                      <input 
+                          :type="showPassword ? 'text' : 'password'" 
+                          id="password" 
+                          v-model="formData.password" 
+                          name="password" 
+                          autocomplete="new-password"
+                          required
+                      />
+                      <FontAwesomeIcon 
+                          :icon="showPassword ? 'fa-eye-slash' : 'fa-eye'" 
+                          class="toggle-password-icon"
+                          @click="togglePasswordVisibility" 
+                      />
+                  </div>
+
+                  <div class="input-group">
+                    <label for="password_confirmation">Xác nhận mật khẩu:</label>
+                    <input 
+                      :type="showPassword ? 'text' : 'password'" 
+                      id="password_confirmation" 
+                      v-model="formData.password_confirmation" 
+                      name="password_confirmation" 
+                      autocomplete="new-password"
+                      required
+                    />
+                  </div>
+              </div>
+  
+              <div class="input-group-checkbox">
+                <input type="checkbox" id="accept-clause" name="accept-clause" />
+                <label for="accept-clause">Đồng ý với các điều khoản?</label>
+              </div>
+  
+              <button type="submit" class="btn">Đăng nhập</button>
+            </form>
+  
+            <div v-if="errorMessage" class="error-message">
+              {{ errorMessage }}
+            </div>
+            <div v-if="successMessage" class="success-message">
+              {{ successMessage }}
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" v-model="form.email" required>
-          <div v-if="errors.email" class="error">{{ errors.email }}</div>
-        </div>
-        <div class="form-group">
-          <label for="password">Mật khẩu</label>
-          <input type="password" id="password" v-model="form.password" required>
-          <div v-if="errors.password" class="error">{{ errors.password }}</div>
-        </div>
-        <div class="form-group">
-          <label for="password_confirmation">Xác nhận mật khẩu</label>
-          <input type="password" id="password_confirmation" v-model="form.password_confirmation" required>
-        </div>
-        <button type="submit">Đăng ký</button>
-      </form>
-    </div>
+      </div>
   </template>
+    
+  <script setup>
+  import { ref } from 'vue';
+  import { library } from '@fortawesome/fontawesome-svg-core';
+  import { faHome, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+  import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+  import axios from 'axios';
   
-  <script>
-import axios from 'axios';
-import { reactive } from 'vue';
-    
-    export default {
-      setup() {
-          const formData = reactive({
-            'username': '',
-            'email': '',
-            'password': '',
-            'password_confirmation': ''
-          });
-
-          const handleRegister = async () => {
-            const respon = await axios.post('api/register', formData);
-          }
-          return {
-            formData,
-            handleRegister
-            }
-
-      //     errors: {}
-      //   };
-      // },
-      // methods: {
-      //   async handleRegister() {
-      //     try {
-      //       const response = await axios.post('/api/register', {
-      //         name: this.form.username,
-      //         email: this.form.email,
-      //         password: this.form.password,
-      //         password_confirmation: this.form.password_confirmation
-      //       });
-    
-      //       if (response.status === 200) {
-      //         alert('Đăng ký thành công');
-      //         // Reset form hoặc thực hiện hành động khác sau khi đăng ký thành công
-      //         this.form.username = '';
-      //         this.form.email = '';
-      //         this.form.password = '';
-      //         this.form.password_confirmation = '';
-      //         this.errors = {};
-      //       }
-      //     } catch (error) {
-      //       if (error.response && error.response.status === 422) {
-      //         this.errors = error.response.data.errors || {};
-      //         alert('Đăng ký thất bại: ' + JSON.stringify(this.errors));
-      //       } else {
-      //         alert('Đã xảy ra lỗi. Vui lòng thử lại.');
-      //         console.error('Error:', error); // Ghi lại chi tiết lỗi
-      //       }
-      //     }
-      //   }
-     }
+  library.add(faHome, faEye, faEyeSlash);
+  
+  const formData = ref({
+    email: '',
+    name: '',
+    password: '',
+    password_confirmation: ''
+  });
+  
+  const errorMessage = ref('');
+  const successMessage = ref('');
+  
+  const showPassword = ref(false);
+  
+  const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value;
+  };
+  const handleRegister = async () => {
+  errorMessage.value = '';
+  successMessage.value = '';
+  
+  if (formData.value.password !== formData.value.password_confirmation) {
+    errorMessage.value = 'Mật khẩu xác nhận không khớp.';
+    return;
   }
+  
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/api/auth/register', formData.value);
+    successMessage.value = response.data.message;
+    window.location.href = '/login';
+  } catch (error) {
+    if (error.response && error.response.data.errors) {
+      errorMessage.value = Object.values(error.response.data.errors).join(' ');
+    } else {
+      errorMessage.value = 'Đăng ký thất bại. Vui lòng thử lại.';
+    }
+  }
+};
+
   </script>
-  
-  <style scoped>
-  .register-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-  }
-  
-  .error {
-    color: red;
-    font-size: 0.875em;
-  }
-  
-  button {
-    padding: 10px 15px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  </style>
   

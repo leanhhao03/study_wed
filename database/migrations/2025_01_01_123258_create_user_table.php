@@ -11,12 +11,12 @@ return new class extends Migration {
             $table->id(); 
             $table->string('name'); 
             $table->string('email')->unique();
-            $table->string('password'); 
+            $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
-            $table->tinyInteger('role')->default(0); 
-            $table->string('gender')->nullable(); 
+            $table->tinyInteger('role')->default(0);  
+            $table->string('gender')->nullable();
             $table->date('date_of_birth')->nullable();
-            $table->string('profile_picture')->nullable(); // Lưu đường dẫn ảnh
+            $table->string('profile_picture')->nullable();
             $table->timestamps();
         });
     }

@@ -24,7 +24,11 @@
         <div class="top-grid-card" v-for="n in 7" :key="n"></div>
       </div>
       <div class="function-card">
-        <button v-for="btn in buttons" :key="btn.text" :class="btn.color">
+        <button 
+        v-for="btn in buttons" 
+        :key="btn.text" 
+        :class="btn.color" 
+        @click="() => redirectTo(btn.route)">
           <FontAwesomeIcon :icon="btn.icon" class="function-card-icon" />
           <span class="function-card-text">{{ btn.text }}</span>
         </button>
@@ -62,11 +66,17 @@ const redirectToLogin = () => {
 
 // Dữ liệu danh sách nút
 const buttons = ref([
-  { text: "Ôn tập", icon: ['fas', 'book'], color: 'function-card-Ontap' },
-  { text: "Thi thử", icon: ['fas', 'pen'], color: 'function-card-ThiThu' },
-  { text: "Ghi nhớ", icon: ['fas', 'book-open'], color: 'function-card-GhiNho' },
-  { text: "Giải trí", icon: ['fas', 'gamepad'], color: 'function-card-GiaiTri' },
-  { text: "Room", icon: ['fas', 'users'], color: 'function-card-Room' },
-  { text: "Đặt lịch", icon: ['fas', 'calendar-alt'], color: 'function-card-DatLich' },
+  { text: "Ôn tập", icon: ['fas', 'book'], color: 'function-card-Ontap', route: "/documents" },
+  { text: "Thi thử", icon: ['fas', 'pen'], color: 'function-card-ThiThu' ,route: "/tests"},
+  { text: "Ghi nhớ", icon: ['fas', 'book-open'], color: 'function-card-GhiNho' ,route: "/notes"},
+  { text: "Giải trí", icon: ['fas', 'gamepad'], color: 'function-card-GiaiTri' ,route: "/"},
+  { text: "Room", icon: ['fas', 'users'], color: 'function-card-Room' ,route: "/"},
+  { text: "Đặt lịch", icon: ['fas', 'calendar-alt'], color: 'function-card-DatLich',route: "/calendar" },
 ]);
+
+//route 
+const redirectTo = (route) => {
+  window.location.href = route;
+};
+
 </script>

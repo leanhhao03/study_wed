@@ -25,7 +25,7 @@ class TestMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Test mail ')
+        return $this->subject('Yêu cầu thay đổi mật khẩu')
                     ->view('email');
     }
 

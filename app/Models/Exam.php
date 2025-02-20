@@ -11,10 +11,22 @@ class Exam extends Model
 
     protected $fillable = [
         'title',
-        'questions'
+        'subject',
+        'questions',
+        'duration'
     ];
 
     protected $casts = [
         'questions' => 'array'
     ];
+
+    public function results()
+    {
+        return $this->hasMany(ExamResult::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('parent_id')->with('replies');
+    }
 }

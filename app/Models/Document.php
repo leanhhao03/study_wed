@@ -10,13 +10,16 @@ class Document extends Model
 {
     use HasFactory;
 
-    protected $table = 'document';
+    protected $table = 'documents';
+    protected $primaryKey = 'Dcm_id';
 
     protected $fillable = [
         'dcm_title', 
-        'dcm_description', 
+        'dcm_description',
+        'subject', 
         'dcm_file_path', 
         'dcm_file_mime', 
+        'dcm_preview_path',
         'us_id'
     ];
 

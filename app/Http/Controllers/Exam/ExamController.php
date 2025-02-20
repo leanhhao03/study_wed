@@ -4,36 +4,65 @@ namespace App\Http\Controllers\Exam;
 
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
+use App\Models\ExamResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class ExamController extends Controller
 {
+    // Lấy danh sách tất cả bài thi
     public function index()
-    {        
-        return Exam::all();
-    }
+    {
+        return response()->json(Exam::select('id', 'title', 'subject', 'duration')->get());
+    }    
 
+    // Bắt đầu bài thi (lưu thời gian bắt đầu)
     public function startExam($id)
     {
-        if(!Auth::check())
-        {
-            return response()->json(['message' => 'You must be logged in to start the exam'],401);
-        }
 
         $exam = Exam::find($id);
-        if(!$exam){
-            return response()->json(['message' => 'Exam not found'], 401);
+        if (!$exam) {
+            return response()->json(['message' => 'Không tìm thấy bài thi'], 404);
+        }
+
+        //Kiểm tra xem user đã bắt đầu bài thi này chưa
+        $user = Auth::user();
+        $existingExamResult = ExamResult::where('exam_id', $id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($existingExamResult) {
+            return response()->json([
+                'message' => 'Bạn đã bắt đầu bài thi này trước đó!',
+                'start_time' => $existingExamResult->start_time,
+            ]);
+        }
+
+        // Tạo mới kết quả làm bài & lưu thời gian bắt đầu
+        $examResult = ExamResult::create([
+            'exam_id' => $id,
+            'user_id' => Auth::id(),
+            'start_time' => Carbon::now(),
+            'score' => null,
+            'user_answers' => json_encode([])
+        ]);
+
+        return response()->json([
+            'message' => 'Bài thi đã bắt đầu!',
+            'start_time' => $examResult->start_time,
+            'exam' => $exam
+        ]);
     }
 
-    return response() ->json($exam);
-    }
-
+    // Tạo bài thi mới
     public function create(Request $request)
     {
         $request->validate([
             'title' => 'required|string',
             'questions' => 'required|array',
+            'subject' => 'required|string',
+            'duration' => 'nullable|integer',
             'questions.*.question' => 'required|string',
             'questions.*.options' => 'required|array',
             'questions.*.correct_answer' => 'required|string'
@@ -41,18 +70,33 @@ class ExamController extends Controller
 
         $exam = Exam::create([
             'title'  => $request->title,
-            'questions' => $request->questions
+            'subject' => $request->subject,
+            'duration' => $request->duration,
+            'questions' => json_encode($request->questions)
         ]);
 
-        return response()-> json(['message' => 'Exam created successfully', 'exam' =>$exam], 201);
+        return response()->json(['message' => 'Bài thi đã được tạo thành công!', 'exam' => $exam], 201);
     }
 
+    // Xem chi tiết một bài thi
     public function show($id)
     {
         $exam = Exam::find($id);
-        if(!$exam){
-            return response()->json(['message' => 'Exam not found'], 401);
-            }
-            return response()->json($exam);
+        if (!$exam) {
+            return response()->json(['message' => 'Không tìm thấy bài thi'], 404);
+        }
+        return response()->json($exam);
     }
+
+    public function getBySubject($subject)
+    {
+        $exams = Exam::where('subject', $subject)->select('id', 'title', 'duration')->get();
+        
+        if ($exams->isEmpty()) {
+            return response()->json(['message' => 'Không có bài thi nào cho môn học này'], 404);
+        }
+
+        return response()->json($exams);
+    }
+
 }

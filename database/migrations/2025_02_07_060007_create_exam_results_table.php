@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('exam_results', function (Blueprint $table) {
             $table->id();
             $table->foreignId('exam_id')->constrained('exams')->onDelete('cascade');
-            $table->foreignId('us_id')->constrained('users')->onDelete('cascade');
-            $table->integer('score');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->timestamp('start_time')->nullable(); // Thời gian bắt đầu
+            $table->integer('score')->nullable(); // Điểm số
             $table->json('user_answers');
             $table->timestamps();
         });

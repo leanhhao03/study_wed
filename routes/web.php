@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Session\Middleware\StartSession;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
@@ -26,6 +27,13 @@ Route::get('/register', function () {
 //logout
 Route::post('/logout', [AuthenticateController::class, 'LogoutUser'])->middleware('auth'); 
 
+//Route document
+Route::get('/documents', function(){
+    return view('document');
+});
 
+Route::get('/tests', function(){
+    return view('test');
+});
 
 

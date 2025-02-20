@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('document', function (Blueprint $table) {
+        Schema::create('documents', function (Blueprint $table) {
             $table->id('Dcm_id');
             $table->string('dcm_title');
             $table->text('dcm_description');
             $table->text('dcm_file_path');
+            $table->string('dcm_preview_path')->nullable();
             $table->unsignedBigInteger('us_id');
             $table->timestamps();
 
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('document');
+        Schema::dropIfExists('documents');
     }
 };

@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('subject');
             $table->json('questions');
+            $table->integer('duration')->default(30);
             $table->timestamps();
         });
     }
