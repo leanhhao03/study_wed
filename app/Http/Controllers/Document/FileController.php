@@ -21,7 +21,7 @@ class FileController extends Controller
     {
         // Validate dữ liệu đầu vào
         $request->validate([
-            'file' => 'required|mimes:doc,docx,pdf|max:5120',
+            'file' => 'required|mimes:doc,docx,pdf|max:2048',
             'subject' => 'required|max:256|string',
             'title_file' => 'required|max:256|string',
         ]);
