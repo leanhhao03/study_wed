@@ -4,11 +4,6 @@ use App\Http\Controllers\Auth\AuthenticateController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Session\Middleware\StartSession;
-use Barryvdh\DomPDF\Facade\Pdf;
-
-use App\Models\User;
-use Illuminate\Auth\Events\Login;
 
 // Route cho trang chủ
 Route::get('/', function () {
@@ -34,6 +29,12 @@ Route::get('/documents', function(){
 
 Route::get('/tests', function(){
     return view('test');
+});
+Route::get('/reset-password', function(){
+    return view('forget_password');
+});
+Route::get('/reset-password2', function(){
+    return view('reset_password');
 });
 
 

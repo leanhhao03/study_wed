@@ -15,12 +15,12 @@
 }
   
 #test .header {
-display: flex;
-justify-content:space-between;
-align-items: center;
-padding: 0 20px;
-background-color: #fff;
-border-bottom: 5px solid #000;
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: #fff;
+  border-bottom: 5px solid #000;
 }
 
 #test .title {

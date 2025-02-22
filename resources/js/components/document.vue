@@ -46,7 +46,6 @@
                 class="pdf-viewer"
                 >
               </iframe>
-              
               <!-- Hiển thị thông báo nếu không có PDF -->
               <p v-else>Chọn một tài liệu từ menu bên phải để xem nội dung.</p>
           </div>

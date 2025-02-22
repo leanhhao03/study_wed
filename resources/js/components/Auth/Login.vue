@@ -51,7 +51,7 @@
               </div>
             </div>
             <div class="register">
-              <a href="#">Quên mật khẩu?</a>
+              <a href="/reset-password">Quên mật khẩu?</a>
               <a href="/register">Chưa có tài khoản?</a>
             </div>
             <div class="input-group-checkbox">

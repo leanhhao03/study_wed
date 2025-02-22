@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Document\FileController;
 use App\Http\Controllers\Auth\ModifyAuthenticate;
 use App\Http\Controllers\Document\CommentController;
+use App\Http\Controllers\Document\FavoriteDocument;
 use App\Http\Controllers\Exam\ExamController;
 use App\Http\Controllers\Exam\ExamResultController;
 use App\Http\Controllers\MailController;
@@ -74,3 +75,9 @@ Route::prefix('/appointments')->group(function () {
     Route::delete('/{id}', [AppointmentController::class, 'destroy']);
 });
 
+//Favorite Document
+Route::prefix('/favorites')->group(function () {
+    Route::post('/', [FavoriteDocument::class, 'store']);
+    Route::delete('/', [FavoriteDocument::class, 'destroy']);
+    Route::get('/', [FavoriteDocument::class, 'index']);
+});

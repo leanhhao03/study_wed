@@ -33,4 +33,8 @@ class Document extends Model
     {
         return asset('storage/' . $this->dcm_file_path);
     }
+    public function favorites() 
+    {
+        return $this->hasMany(Favorite::class, 'document_id', 'Dcm_id');
+    }
 }

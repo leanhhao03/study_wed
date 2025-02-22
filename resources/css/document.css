@@ -183,8 +183,8 @@
   border-radius: 8px;
   display: flex;
   padding: 20px;
-  overflow-y: auto;
-  scrollbar-color: #f2f2f2 transparent;
+  height: 640px;
+  scrollbar-width: none;
 }
 
 .document-area .document-content {
@@ -192,6 +192,7 @@
   text-align: center;
   cursor: pointer;
   transition: 0.3s;
+  height: 100%;
 }
 
 .right-menu .menu-item {
