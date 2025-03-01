@@ -23,7 +23,10 @@ Route::get('/login', function(){
 Route::get('/register', function () {
     return view('register');
 });
-
+//Rouete for try to test 
+Route::get('/test-doc', function(){
+    return view('testdoc');
+});
 //logout
 Route::post('/logout', [AuthenticateController::class, 'LogoutUser'])->middleware('auth'); 
 
@@ -35,5 +38,6 @@ Route::get('/documents', function(){
 Route::get('/tests', function(){
     return view('test');
 });
-
-
+Route::get('/profile', function(){
+    return view('profile');
+});

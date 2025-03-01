@@ -21,7 +21,7 @@
 
     <main class="main">
       <div class="top-grid">
-        <div class="top-grid-card" v-for="n in 7" :key="n"></div>
+        <div class="top-grid-card" v-for="n in 5" :key="n"></div>
       </div>
       <div class="function-card">
         <button 
@@ -40,10 +40,10 @@
         </button>
         <div class="small-card-container">
           <button class="small-card">
-            <div class="card-content">.............</div>
+            <div class="card-content"></div>
           </button>
           <button class="small-card">
-            <div class="card-content">.............</div>
+            <div class="card-content"></div>
           </button>
         </div>
       </div>
@@ -69,8 +69,6 @@ const buttons = ref([
   { text: "Ôn tập", icon: ['fas', 'book'], color: 'function-card-Ontap', route: "/documents" },
   { text: "Thi thử", icon: ['fas', 'pen'], color: 'function-card-ThiThu' ,route: "/tests"},
   { text: "Ghi nhớ", icon: ['fas', 'book-open'], color: 'function-card-GhiNho' ,route: "/notes"},
-  { text: "Giải trí", icon: ['fas', 'gamepad'], color: 'function-card-GiaiTri' ,route: "/"},
-  { text: "Room", icon: ['fas', 'users'], color: 'function-card-Room' ,route: "/"},
   { text: "Đặt lịch", icon: ['fas', 'calendar-alt'], color: 'function-card-DatLich',route: "/calendar" },
 ]);
 

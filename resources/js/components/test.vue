@@ -11,22 +11,22 @@
             <FontAwesomeIcon :icon="['fas', 'magnifying-glass']" class="search-icon" />
             <button class="btn-search">Tìm kiếm</button>
           </div>
-  
           <div class="search-trending">
-            <div class="trending-row">
-              <span class="trending-title">Trending Now:</span>
-              <div class="trending-item" v-for="n in 4" :key="n">
-                topic{{ n }}
+        <div class="trending-row">
+          <span class="trending-title">Subjects Type :</span>
+            <label class="trending-wrapper" v-for="n in 4" :key="n">
+              <input type="checkbox" class="trending-checkbox" v-model="selectedTrending" :value="'topic' + n">
+                <span class="trending-item">topic{{ n }}</span>
+            </label>
               </div>
-            </div>
-            <div class="trending-row trending-bottom">
-              <div class="trending-item" v-for="n in 4" :key="n + 4">
-                topic{{ n + 4 }}
-              </div>
-            </div>
-          </div>
+                <div class="trending-row trending-bottom">
+                  <label class="trending-wrapper" v-for="n in 4" :key="n + 4">
+                    <input type="checkbox" class="trending-checkbox" v-model="selectedTrending" :value="'topic' + (n + 4)">
+                      <span class="trending-item">topic{{ n + 4 }}</span>
+            </label>
         </div>
-  
+            </div>
+        </div>
         <div class="test-list">
           <div class="test-card" v-for="n in 8" :key="n">
             <a :href="'/'" class="test-card-link">

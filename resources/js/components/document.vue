@@ -89,10 +89,7 @@ library.add(faBars);
 
   
 
-// Toggle menu khi click vào nút
-const toggleMenu = () => {
-  menuVisible.value = !menuVisible.value;
-};
+
 
 // Gọi API khi component được mount
 onMounted(async () => {
