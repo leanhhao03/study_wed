@@ -31,10 +31,10 @@ Route::get('/tests', function(){
     return view('test');
 });
 Route::get('/reset-password', function(){
-    return view('forget_password');
-});
-Route::get('/reset-password2', function(){
     return view('reset_password');
 });
 
+Route::get('/profile', function(){
+    return view('ProfileUser');
+});
 

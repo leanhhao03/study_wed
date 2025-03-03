@@ -5,31 +5,39 @@ namespace App\Http\Controllers\Verify;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rules\Password as PasswordRule;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 
 class ResetPasswordController extends Controller
 {
     public function reset(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => ['required', 'confirmed', PasswordRule::min(8)->mixedCase()->numbers()],
-            'token' => 'required'
-        ]);
+{
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+        'otp' => 'required|string',
+        'password' => 'required|confirmed|min:8',
+    ]);
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->save();
-            }
-        );
+    $record = DB::table('password_reset_tokens')->where('email', $request->email)->first();
 
-        return $status === Password::PASSWORD_RESET
-            ? response()->json(['message' => 'Mật khẩu đã được đặt lại thành công.'], 200)
-            : response()->json(['error' => 'Token không hợp lệ hoặc email không chính xác.'], 400);
+    if (!$record || !Hash::check($request->otp, $record->token)) {
+        return response()->json(['message' => 'Mã OTP không hợp lệ hoặc đã hết hạn!'], 400);
     }
+
+    // Kiểm tra thời gian hết hạn (10 phút)
+    if (now()->diffInMinutes($record->created_at) > 10) {
+        return response()->json(['message' => 'Mã OTP đã hết hạn!'], 400);
+    }
+
+    // Cập nhật mật khẩu mới
+    $user = User::where('email', $request->email)->first();
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    // Xóa OTP sau khi đặt lại mật khẩu thành công
+    DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+    return response()->json(['message' => 'Mật khẩu đã được thay đổi!'], 200);
+}
+
 }

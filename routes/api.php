@@ -17,11 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::post('register', [RegisterController::class, 'register']);
     Route::post('login', [AuthenticateController::class, 'LoginUser']);
-    Route::post('edit', [ModifyAuthenticate::class, 'modifyProfile']);
+    Route::put('edit/{id}', [ModifyAuthenticate::class, 'modifyProfile']);
+    Route::get('/user/{id}', [AuthenticateController::class, 'getUser']);
 });
 
 //Mail Controller
-Route::post('/forgot-password', [MailController::class, 'sendEmail']);
+Route::post('/send-email', [MailController::class, 'sendEmail']);
 Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 
 //file controller

@@ -129,11 +129,7 @@ width: 55%;
   gap: 20px;
   max-height: 80vh;
   padding: 10px 0 0 15px;
-  justify-content: space-between;
-  
-  /* For Firefox */
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+  /* justify-content: space-between; */
 }
 
 .test-card {

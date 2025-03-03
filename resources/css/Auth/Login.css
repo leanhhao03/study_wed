@@ -55,7 +55,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     align-items: center;
     justify-content: center;
     background: linear-gradient(120deg, #FBD0D9 20%, #C3EBEA 80%);
-    min-height: 90vh;
+    min-height: 100vh;
     position: relative;
     z-index: 1;
 }

@@ -24,6 +24,7 @@
 
 .noti-login{
   display: flex;
+  margin-top: 15px;
   gap: 20px;
 }
 
@@ -37,6 +38,7 @@
   color: #fff;
   stroke: #000; 
   stroke-width: 70px;
+  margin-top: 5px;
   font-size: 24px;
   cursor: pointer;
 }
@@ -53,6 +55,11 @@
   width: 25px;
   height: 25px;
   color: #000;
+}
+
+#app .user-name{
+  font-size: 25px;
+
 }
 
 .main {

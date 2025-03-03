@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -17,29 +20,43 @@ class AuthenticateController extends Controller
      */
     public function LoginUser(Request $request)
     {
-        $validate = Validator::make($request->all(), [
-            'email' => 'required|email|',
-            'password' => 'required|min:6'
-        ]);
-
-        if($validate->fails()){
-            return response()->json(['errors' => $validate->errors()],422); 
-        }
-        
         $credentials = $request->only(['email', 'password']);
-     
-            if(Auth::attempt($credentials)) {
-                $request->session()->put('user', Auth::user());
-                return response()->json(['message' => 'đăng nhập thành công'],200);
-            
-            }
-                throw ValidationException::withMessages([
-                    'msg' => 'Email or password invalid'
-                ]);
-          
-        return response()->json(['message' => 'Đăng nhập thành công'],200);  
+    
+        if (!Auth::attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    
+        $user = Auth::user();
+        
+        // Lưu user_id vào session database
+        session(['user_id' => $user->id]);
+    
+        Log::info('User in Session:', ['session' => session()->all()]); // Kiểm tra log
+    
+        return response()->json([
+            'message' => 'Đăng nhập thành công',
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email, 
+            'picture' => $user->picture
+        ], 200);
     }
+    
 
+    public function getUser($id)
+    {
+        $user = User::find($id);
+        return response()->json([
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'number_phone' => $user->number_phone,
+            'password' => $user->password,
+            'picture' => $user->picture
+        ]);
+    }
+    
+    
     //logout seesion user
     public function LogoutUser(Request $request)
     {
