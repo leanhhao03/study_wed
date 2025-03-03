@@ -19,7 +19,6 @@
           <button class="btn-search" @click="fetchExams">Tìm kiếm</button>
         </div>
 
-        <!-- Danh sách môn học -->
         <div class="search-trending">
           <div class="trending-row">
             <span class="trending-title">Môn học:</span>
@@ -36,7 +35,6 @@
         </div>
       </div>
 
-      <!-- Danh sách bài thi -->
       <div class="test-list">
         <div v-if="loading">Đang tải...</div>
         <div v-else-if="exams.length === 0">Không có bài thi nào</div>

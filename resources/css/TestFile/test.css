@@ -32,23 +32,43 @@ width: 55%;
 .search-container {
   background: linear-gradient(120deg, #FBD0D9 20%, #C3EBEA 80%);
   padding: 20px;
-  position: relative; 
+  position: relative;
+  border-bottom: 5px solid #000; 
 }
 
 .search-bar {
   position: relative;
   display: flex;
-  width: 50%;
+  width: 75vh;
   margin-top: 10px;
+  align-items: center;
 }
 
 .search-bar input {
-  width: 100%;
-  padding: 10px 0px 10px 15px;
+  width: 100vh;
+  height: 40px;
+  line-height: 28px;
+  padding: 0 1rem;
+  padding-left: 2.5rem;
   font-size: 16px;
-  border: 1px solid #000;
-  border-radius: 12px;
+  border: 2px solid transparent;
+  border-radius: 8px; 
   outline: none;
+  background-color: #f3f3f4; 
+  color: #0d0c22;
+  transition: 0.3s ease;
+}
+
+.search-bar input::placeholder {
+  color: #9e9ea7;
+}
+
+.search-bar input:focus, 
+.search-bar input:hover {
+  outline: none;
+  border-color: rgba(234,76,137,0.4);
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgb(234 76 137 / 10%);
 }
 
 .search-icon {
@@ -69,19 +89,37 @@ width: 55%;
   transform: translateY(-50%);
   padding: 5px 20px;
   font-size: 18px;
-  background-color: #ffffff;
+  background-color: #cdfffd;
   color: #000;
   border: none;
   border-radius: 25px;
   cursor: pointer;
-  width: 120px;
-  transition: 0.3s;
+  width: 135px;
+  transition:all 0.3s ease-in-out;
+  overflow: hidden;
 }
 
 .btn-search:hover{
-  background: #f2f2f2;
+  color: #ffffff;
+  box-shadow: 2px 3px 10px -2px #23807e;
 }
 
+.btn-search::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  top: 0;
+  width: 0;
+  height: 100%;
+  background-color: #ffa2a2;
+  transform: skewX(45deg);
+  z-index: -1;
+  transition: width 500ms;
+}
+
+.btn-search:hover::before {
+  width: 200%;
+}
 .search-trending {
   display: flex;
   flex-direction: column;
@@ -89,6 +127,7 @@ width: 55%;
   width: 100%;
   margin-top: 30px;
 }
+
 
 .trending-row {
   display: flex;
@@ -105,22 +144,44 @@ width: 55%;
 .trending-bottom {
   justify-content: flex-start;
 }
+.trending-checkbox {
+  display: none;
+}
 
 .trending-item {
   background: white;
-  padding: 8px 20px;
+  padding: 10px 24px;
   border-radius: 20px;
   font-size: 16px;
+  font-weight: bold;
   border: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 
+    10px 10px 30px rgba(157, 177, 255, 0.3), 
+    inset -5px -5px 15px rgba(157, 177, 255, 0.5), 
+    inset 5px 5px 10px rgba(255, 255, 255, 0.8);
   text-align: center;
   white-space: nowrap;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease-in-out;
+  display: inline-block;
+  user-select: none;
 }
 
-.trending-item:hover {
-  background: #f2f2f2;
+.trending-checkbox:not(:checked) + .trending-item:hover {
+  background: #f8f9ff;
+  transform: translateY(-3px);
+  box-shadow: 
+    5px 10px 20px rgba(100, 149, 237, 0.4), 
+    inset -3px -3px 10px rgba(100, 149, 237, 0.4), 
+    inset 3px 3px 8px rgba(255, 255, 255, 0.9);
+}
+
+.trending-checkbox:checked + .trending-item {
+  transform: translateY(2px);
+  background: #ffffff;
+  box-shadow: 
+    inset 4px 4px 10px #afd1e7, 
+    inset -4px -4px 10px #fab7c6;
 }
 
 .test-list {
@@ -140,11 +201,42 @@ width: 55%;
   border: 2px solid #ddd;
   padding: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
   margin-top: 15px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: 1s, color 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.test-card:hover {
+  background-color: white;
+  transform: scale(1);
+  box-shadow: 10px 10px 15px #f67eaa,
+              -10px -10px 15px #a1bdff;
+  color: #222;
+}
+
+.test-card:focus,
+.test-card:hover {
+  color: #000;
+}
+
+.test-card:focus:after,
+.test-card:hover:after {
+  width: 100%;
+  left: 0%;
+}
+
+.test-card:after {
+  content: "";
+  pointer-events: none;
+  bottom: -2px;
+  left: 50%;
+  position: absolute;
+  width: 0%;
+  height: 6px;
+  background: linear-gradient(135deg, #d87ef6, #a1bdff);
+  transition: width 400ms cubic-bezier(0.25, 0.8, 0.25, 1), left 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  
 }
 
 .test-card-link {

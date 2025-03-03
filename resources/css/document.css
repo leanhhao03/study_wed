@@ -35,18 +35,6 @@
   opacity: 0.7;
 }
 
-.document-menu .dropdown-menu {
-  position: absolute;
-  top: 30px;
-  left: 0;
-  background: #fff;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  padding: 8px 0;
-  width: 120px;
-}
-
 .document-menu .menu-item {
   padding: 8px 12px;
   cursor: pointer;

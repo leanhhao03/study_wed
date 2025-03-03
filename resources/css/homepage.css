@@ -13,10 +13,6 @@
   border-bottom: 5px solid #000;
 }
 
-/* .logo{
-  
-} */
-
 #app .title {
   font-family: 'Oleo Script';
   font-size: 3.2rem;
@@ -63,6 +59,7 @@
 }
 
 .main {
+  background: linear-gradient(120deg, #FBD0D9 20%, #C3EBEA 80%);
   padding: 10px;
 }
 
@@ -82,6 +79,7 @@
   background-color: #ccc;
   border-radius: 8px;
   border: 2px solid #ddd;
+  transition: all 0.3s ease;
 }
 
 .top-grid-card:hover {
@@ -89,6 +87,25 @@
   cursor: pointer;
   transform: scale(1.05);
   transition: all 0.3s ease;
+  box-shadow: 0px 0px 20px 1px #ff768d3f;
+  animation: glowing 3s infinite alternate;
+}
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 10px #fda7ba;
+  }
+  25% {
+    box-shadow: 0 0 15px #2b8d4c;
+  }
+  50% {
+    box-shadow: 0 0 20px #e5a4f1;
+  }
+  75% {
+    box-shadow: 0 0 25px #ff8383;
+  }
+  100% {
+    box-shadow: 0 0 10px #fda7ba;
+  }
 }
 
 .function-card {
@@ -103,12 +120,62 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px 35px;
+  padding: 12px 40px;
   border: none;
   border-radius: 8px;
   font-size: 24px;
   gap: 10px;
   cursor: pointer;
+  background-color: #fff;
+  overflow: hidden;
+  transition: all 0.4s ease-in-out;
+  position: relative;
+  perspective: 1000px;
+}
+
+.function-card button::before,
+.function-card button::after {
+  content: "";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: transform 0.5s ease-in-out;
+  pointer-events: none;
+}
+
+.function-card button::before {
+  content: "Vào !";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: linear-gradient(135deg, #80ffd5, #fdaffd);
+  transform: translateY(100%);
+  transition: transform 0.5s ease-in-out;
+  z-index: 0;
+}
+
+.function-card button:hover::before {
+  transform: translateY(0%);
+}
+
+.function-card button:hover::after {
+  transform: translateY(-100%);
+}
+
+.function-card button:focus {
+  outline: none;
+}
+
+.function-card button:active {
+  transform: scale(0.97);
+  box-shadow: 0 6px 12px rgba(51, 51, 51, 0.2);
 }
 
 .function-card-icon {
@@ -122,35 +189,43 @@
   color: #000;
 }
 
-.function-card-Ontap {
- background: linear-gradient(135deg, #DB9FE7, #A0E5CB);
-}
-
-.function-card-ThiThu {
-  background: linear-gradient(135deg, #A0E5CB, #FF98C6);
-}
-
-.function-card-GhiNho {
-  background: linear-gradient(135deg, #FF98C6, #DB9FE7);
-}
-
-.function-card-GiaiTri {
-  background: linear-gradient(135deg, #DB9FE7, #A0E5CB);
-}
-
-.function-card-Room {
-  background: linear-gradient(135deg, #A0E5CB, #FF98C6);
-}
-
-.function-card-DatLich {
-  background: linear-gradient(135deg, #FF98C6, #DB9FE7);
-}
-
 .bottom-grid {
   display: grid;
   grid-template-columns: 80% 20%;
   gap: 20px;
   height: 70vh;
+  transition: 1s, color 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.menu-card:hover {
+  background-color: white;
+  transform: scale(1.01);
+  box-shadow: 10px 10px 15px #f67eaa,
+              -10px -10px 15px #a1bdff;
+  color: #222;
+}
+
+.menu-card:focus,
+.menu-card:hover {
+  color: #000;
+}
+
+.menu-card:focus:after,
+.menu-card:hover:after {
+  width: 100%;
+  left: 0%;
+}
+
+.menu-card:after {
+  content: "";
+  pointer-events: none;
+  bottom: -2px;
+  left: 50%;
+  position: absolute;
+  width: 0%;
+  height: 6px;
+  background: linear-gradient(135deg, #d87ef6, #a1bdff);
+  transition: width 400ms cubic-bezier(0.25, 0.8, 0.25, 1), left 400ms cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .large-card-container {

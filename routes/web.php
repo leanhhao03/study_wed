@@ -30,6 +30,9 @@ Route::get('/documents', function(){
 Route::get('/tests', function(){
     return view('test');
 });
+Route::get('/test-doc', function(){
+    return view('testdoc');
+});
 Route::get('/reset-password', function(){
     return view('reset_password');
 });
