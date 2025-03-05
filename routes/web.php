@@ -36,5 +36,3 @@ Route::get('/reset-password', function(){
 Route::get('/reset-password2', function(){
     return view('reset_password');
 });
-
-
