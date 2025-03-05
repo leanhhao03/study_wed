@@ -55,7 +55,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
     align-items: center;
     justify-content: center;
     background: linear-gradient(120deg, #FBD0D9 20%, #C3EBEA 80%);
-    min-height: 90vh;
+    min-height: 100vh;
     position: relative;
     z-index: 1;
 }
@@ -84,13 +84,13 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 
 .wave {
   position: absolute;
-  width: 600px;
-  height: 750px;
+  width: 700px;
+  height: 850px;
   top: 0;
   left: 0;
   opacity: 0.6;
-  margin-left: -50%;
-  margin-top: -80%;
+  margin-left: -60%;
+  margin-top: -90%;
   background: linear-gradient(744deg, #c784f7, #9586fa 40%, #ffffff);
   z-index: -1; 
   border-radius: inherit; 
@@ -114,7 +114,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 
 .playing .wave {
   border-radius: 40%;
-  animation: wave 3000ms infinite linear;
+  animation: wave 4000ms infinite linear;
 }
 
 .wave {
@@ -123,7 +123,7 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 }
 
 .playing .wave:nth-child(2) {
-  animation-duration: 4000ms;
+  animation-duration: 4500ms;
 }
 
 .wave:nth-child(2) {

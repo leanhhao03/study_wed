@@ -12,9 +12,20 @@ use Carbon\Carbon;
 class ExamController extends Controller
 {
     // Lấy danh sách tất cả bài thi
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Exam::select('id', 'title', 'subject', 'duration')->get());
+        $query = Exam::select('id', 'title', 'subject', 'duration');
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('title', 'LIKE', "%$search%");
+        }
+        if ($request->has('subject')) {
+            $subjects = $request->input('subject');
+            $query->where('subject', $subjects);
+        }
+
+        return response()->json($query->get());
     }    
 
     // Bắt đầu bài thi (lưu thời gian bắt đầu)
@@ -95,7 +106,6 @@ class ExamController extends Controller
         if ($exams->isEmpty()) {
             return response()->json(['message' => 'Không có bài thi nào cho môn học này'], 404);
         }
-
         return response()->json($exams);
     }
 

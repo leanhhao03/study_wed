@@ -86,13 +86,6 @@ library.add(faBars);
     const documentTitle = ref('Tiêu đề tài liệu');
     const selectedSubject = ref(null);
 
-  
-
-// Toggle menu khi click vào nút
-const toggleMenu = () => {
-  menuVisible.value = !menuVisible.value;
-};
-
 // Gọi API khi component được mount
 onMounted(async () => {
   try {

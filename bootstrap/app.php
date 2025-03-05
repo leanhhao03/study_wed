@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         // Thêm middleware StartSession cho API
-        $middleware->append(\Illuminate\Session\Middleware\StartSession::class);
+        $middleware->prepend(\Illuminate\Session\Middleware\StartSession::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

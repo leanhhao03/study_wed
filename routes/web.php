@@ -30,9 +30,14 @@ Route::get('/documents', function(){
 Route::get('/tests', function(){
     return view('test');
 });
-Route::get('/reset-password', function(){
-    return view('forget_password');
+Route::get('/test-doc', function(){
+    return view('testdoc');
 });
-Route::get('/reset-password2', function(){
+Route::get('/reset-password', function(){
     return view('reset_password');
 });
+
+Route::get('/profile', function(){
+    return view('ProfileUser');
+});
+
