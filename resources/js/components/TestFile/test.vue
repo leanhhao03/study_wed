@@ -38,15 +38,18 @@
       <div class="test-list">
         <div v-if="loading">Đang tải...</div>
         <div v-else-if="exams.length === 0">Không có bài thi nào</div>
-        <div class="test-card" v-for="exam in exams" :key="exam.id">
-          <router-link :to="'/exam/' + exam.id" class="test-card-link">
+        <div class="test-card" 
+            v-for="exam in exams" 
+            :key="exam.id" 
+            @click="handleStartExam(exam.id)">
+          <a :href="`/test-doc?id=` + exam.id" class="test-card-link">
             <div class="test-title">{{ exam.title }}</div>
             <div class="test-info">
               <span>Thời gian: {{ exam.duration }} phút</span>
               <span>Môn học: {{ exam.subject }}</span>
             </div>
-          </router-link>
-        </div>
+          </a>
+        </div>    
       </div>
     </div>
   </div>
@@ -93,6 +96,25 @@ const toggleSubject = (subject) => {
   fetchExams();
 };
 
+const handleStartExam = async (examId) => {
+  try {
+    const userId = localStorage.getItem("user_id"); 
+
+    if (!userId) {
+      return;
+    }
+
+    const response = await axios.post(`${API_URL}/exams/start/${examId}`, {
+      user_id: userId, 
+    });
+
+    console.log(response.data.message);
+    window.location.href = `/test-doc?id=${examId}`;
+  } catch (error) {
+    console.error("Lỗi khi bắt đầu bài thi:", error.response?.data || error);
+  }
+};
+
 // Gọi API lấy danh sách bài thi với filter
 const fetchExams = async () => {
   loading.value = true;
@@ -100,7 +122,7 @@ const fetchExams = async () => {
     const params = {};
     
     if (selectedSubjects.value) {
-      params.subject = selectedSubjects.value; // Gửi 1 môn duy nhất
+      params.subject = selectedSubjects.value; 
     }
     if (searchQuery.value){
       params.search = searchQuery.value;
@@ -122,19 +144,3 @@ onMounted(() => {
   fetchSubjects();
 });
 </script>
-
-<style scoped>
-.trending-item {
-  padding: 8px 15px;
-  margin: 5px;
-  border-radius: 15px;
-  cursor: pointer;
-  background: #e0e0e0;
-  display: inline-block;
-}
-
-.trending-item.active {
-  background: #007bff;
-  color: white;
-}
-</style>

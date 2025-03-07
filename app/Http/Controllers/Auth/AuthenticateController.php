@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -41,7 +42,6 @@ class AuthenticateController extends Controller
             'picture' => $user->picture
         ], 200);
     }
-    
 
     public function getUser($id)
     {
@@ -51,11 +51,12 @@ class AuthenticateController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'number_phone' => $user->number_phone,
+            'date_of_birth' => Carbon::parse($user->date_of_birth)->format('d/m/Y'),
             'password' => $user->password,
-            'picture' => $user->picture
+            'picture' => $user->picture,
+            'created_at' => Carbon::parse($user->created_at)->format('d/m/Y')
         ]);
     }
-    
     
     //logout seesion user
     public function LogoutUser(Request $request)

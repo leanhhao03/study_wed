@@ -26,8 +26,8 @@
                   </div>
                   <div class="user-details">
                       <div class="details-item">
-                          <h2>Name of user</h2>
-                          <p>Time to join (date/month/year)</p>
+                          <h2>Name of user: {{ user.name }}</h2>
+                          <p>Time to join: {{ user.created_at }}</p>
                       </div>
                       <div class="details-item">
                           <h2>Grades</h2>
@@ -51,7 +51,7 @@
                               <h2>Thay đổi thông tin cá nhân</h2>
                           <div class="input-box">
                               <label for="name">Tên người dùng</label>
-                              <input type="text">
+                              <input type="text" v-model="name">
                           </div>
                           <div class="input-box">
                               <label for="phone">Số điện thoại</label>
@@ -60,15 +60,16 @@
                           <div class="input-box">
                               <label for="sex">Giới tính</label>
                               <select v-model="gender">
-                                  <option value="nam">Nam</option>
-                                  <option value="nữ">Nữ</option>
+                                  <option value="male">Male</option>
+                                  <option value="female">Female</option>
+                                  <option value="other">other</option>
                               </select>
                           </div>
                           <div class="nav-btn">
                               <button class="change-btn" @click="openEditGmailForm">Đổi Gmail</button>
                               <button class="change-btn" @click="openEditPasswordForm">Đổi mật khẩu</button>
                           </div>
-                          <button class="save-btn" @click="closeEditForm">Lưu</button>
+                          <button class="save-btn" @click="updateProfile">Lưu</button>
                       </div>
                   </div>
                   <div v-if="showEditGmailForm" class="overlay" @click.self="closeEditGmailForm">
@@ -116,7 +117,7 @@
                               <button class="change-btn" @click="openEditForm">Đổi thông tin cá nhân</button>
                               <button class="change-btn" @click="openEditGmailForm">Đổi Gmail</button>
                           </div>
-                          <button class="save-btn" @click="validateOldPassword">Lưu</button>
+                          <button class="save-btn" @click="updateProfile">Lưu</button>
                       </div>
                   </div>
               </div>
@@ -611,25 +612,29 @@
 </template>
 
 <script setup>
-  import { ref } from "vue";
+  import { ref, onMounted } from "vue";
+  import axios from "axios";
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import { library } from '@fortawesome/fontawesome-svg-core';
   import { faBook, faPen, faBookOpen, faCalendarAlt, faUserPen } from '@fortawesome/free-solid-svg-icons';
 
   library.add(faBook, faPen, faBookOpen, faCalendarAlt, faUserPen);
 
-  
   const showEditForm = ref(false);
   const showEditGmailForm = ref(false);
   const showEditPasswordForm = ref(false);
+  const name = ref("");
   const phone = ref("");
-  const gender = ref("nam");
+  const gender = ref("male");
+  const profilePicture = ref(null);
   const oldEmail = ref("");
   const newEmail = ref("");
   const oldPassword = ref("");
   const newPassword = ref("");
   const showEmailError = ref(false);
   const showPasswordError = ref(false);
+  const UserId = localStorage.getItem('user_id');
+  const user = ref({});
 
   const openEditForm = () => {
       showEditGmailForm.value = false;
@@ -660,6 +665,43 @@
   }
 };
 
+const fetchUserInfo = async () =>{
+  try{
+    const response = await axios.get(`/api/auth/user/${UserId}`);
+    user.value = response.data;
+  }catch (error){
+    console.error("Lỗi khi lấy thông tin người dùng:", error.response?.data || error );
+  }
+};
+
+onMounted(() => {
+    if (UserId) {
+        fetchUserInfo();
+    }
+});
+
+const updateProfile = async () => {
+  const formData = new FormData();
+    
+    if (name.value) formData.append("name", name.value);
+    if (phone.value) formData.append("number_phone", phone.value);
+    if (gender.value) formData.append("gender", gender.value);
+    if (profilePicture.value) formData.append("profile_picture", profilePicture.value);
+
+
+    try {
+        const response = await axios.post(`/api/auth/edit/${UserId}`, formData, {
+        });
+        showEditForm.value = false;
+        setTimeout(() => {
+          fetchUserInfo();
+          }, 500);
+        alert(response.data.message);
+    } catch (error) {
+        console.error("Lỗi khi cập nhật:", error.response?.data || error);
+    }
+};
+
   const validateOldPassword = () => {
       if (oldPassword.value !== "correct_password") {
           showPasswordError.value = true;
@@ -669,7 +711,6 @@
       }
   };
 </script>
-
 <script>
   export default {
       components: {

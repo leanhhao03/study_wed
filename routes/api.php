@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::post('register', [RegisterController::class, 'register']);
     Route::post('login', [AuthenticateController::class, 'LoginUser']);
-    Route::put('edit/{id}', [ModifyAuthenticate::class, 'modifyProfile']);
+    Route::post('edit/{id}', [ModifyAuthenticate::class, 'updateProfile']);
     Route::get('/user/{id}', [AuthenticateController::class, 'getUser']);
 });
 
@@ -47,10 +47,8 @@ Route::prefix('/exams')->group(function () {
     Route::get('/{id}', [ExamController::class, 'show']);
     Route::post('/', [ExamController::class, 'create']);
     // Bắt đầu bài thi
-    Route::post('/{id}/start', [ExamController::class, 'startExam']);
+    Route::post('/start/{id}', [ExamController::class, 'startExam']);
     // Lấy bài thi theo môn học
-    Route::get('/subject/{subject}', [ExamController::class, 'getBySubject']);
-    // Bình luận cho Exam
     Route::prefix('/{examId}/comments')->group(function () {
         Route::get('/', [CommentController::class, 'index']);  
         Route::post('/', [CommentController::class, 'store']);   

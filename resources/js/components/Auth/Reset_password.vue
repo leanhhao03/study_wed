@@ -116,8 +116,8 @@ const resetPassword = async () => {
       password_confirmation: confirmpassword.value,
     });
 
-    message.value = response.data.message; // Cập nhật thông báo
-    step.value = 3; // Chuyển sang bước hoàn tất
+    message.value = response.data.message; 
+    step.value = 3;
   } catch (error) {
     message.value = error.response?.data?.message || "Đã xảy ra lỗi!";
   }

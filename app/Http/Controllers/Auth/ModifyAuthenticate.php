@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ModifyAuthenticate extends Controller
@@ -17,18 +17,20 @@ class ModifyAuthenticate extends Controller
         if (!$user) {
             return response()->json(['message' => 'User không tồn tại!'], 404);
         }
-
+    
+    
         $validator = Validator::make($request->all(), [
             'name' => 'nullable|string|max:255',
             'number_phone' => 'nullable|string|max:15',
             'gender' => 'nullable|in:male,female,other',
+            'date_of_birth' => 'nullable|date_format:Y/m/d',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+    
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
             $imageName = time() . '_' . $image->getClientOriginalName();
@@ -36,24 +38,26 @@ class ModifyAuthenticate extends Controller
             $user->profile_picture = $imagePath;
         }
 
-        if ($request->filled('name')) {
+        if ($request->has('name')) {
             $user->name = $request->input('name');
         }
-
-        if ($request->filled('number_phone')) {
+    
+        if ($request->has('number_phone')) {
             $user->number_phone = $request->input('number_phone');
         }
-
-        if ($request->filled('gender')) {
+    
+        if ($request->has('gender')) {
             $user->gender = $request->input('gender');
         }
-
+        if ($request->has('date_of_birth')) {
+            $user->date_of_birth = $request->input('date_of_birth');
+        }
         $user->save();
-
+        
         return response()->json([
             'message' => 'Cập nhật thông tin thành công!',
             'user' => $user
-        ], 200);
+        ]);
     }
 
     /**

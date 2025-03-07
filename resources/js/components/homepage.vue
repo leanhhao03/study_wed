@@ -86,7 +86,6 @@ const getID = localStorage.getItem('user_id');
 onMounted(async () => {
   try {
     if(getID) {
-      console.log(getID);
       const res = await axios.get(`/api/auth/user/${getID}`);
       user.value = res.data;
       isLoggedIn.value = true;

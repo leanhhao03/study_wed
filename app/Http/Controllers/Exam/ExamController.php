@@ -29,7 +29,7 @@ class ExamController extends Controller
     }    
 
     // Bắt đầu bài thi (lưu thời gian bắt đầu)
-    public function startExam($id)
+    public function startExam(Request $request, $id)
     {
 
         $exam = Exam::find($id);
@@ -38,9 +38,9 @@ class ExamController extends Controller
         }
 
         //Kiểm tra xem user đã bắt đầu bài thi này chưa
-        $user = Auth::user();
+        $user = $request->input('user_id'); 
         $existingExamResult = ExamResult::where('exam_id', $id)
-            ->where('user_id', $user->id)
+            ->where('user_id', $user)
             ->first();
 
         if ($existingExamResult) {
@@ -53,7 +53,7 @@ class ExamController extends Controller
         // Tạo mới kết quả làm bài & lưu thời gian bắt đầu
         $examResult = ExamResult::create([
             'exam_id' => $id,
-            'user_id' => Auth::id(),
+            'user_id' => $user,
             'start_time' => Carbon::now(),
             'score' => null,
             'user_answers' => json_encode([])
@@ -90,23 +90,20 @@ class ExamController extends Controller
     }
 
     // Xem chi tiết một bài thi
-    public function show($id)
-    {
-        $exam = Exam::find($id);
-        if (!$exam) {
-            return response()->json(['message' => 'Không tìm thấy bài thi'], 404);
-        }
-        return response()->json($exam);
+  public function show($id)
+{
+    $exam = Exam::find($id);
+    if (!$exam) {
+        return response()->json(['message' => 'Không tìm thấy bài thi'], 404);
     }
-
-    public function getBySubject($subject)
-    {
-        $exams = Exam::where('subject', $subject)->select('id', 'title', 'duration')->get();
-        
-        if ($exams->isEmpty()) {
-            return response()->json(['message' => 'Không có bài thi nào cho môn học này'], 404);
-        }
-        return response()->json($exams);
-    }
-
+    
+    // Trả về danh sách câu hỏi và đáp án
+    return response()->json([
+        'id' => $exam->id,
+        'title' => $exam->title,
+        'duration' => $exam->duration,
+        'subject' => $exam->subject,
+        'questions' => json_decode($exam->questions), 
+    ]);
+}
 }
