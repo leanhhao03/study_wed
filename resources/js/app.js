@@ -8,6 +8,8 @@ import Profile from './components/Auth/ProfileUser.vue';
 import Reset_password from './components/Auth/Reset_password.vue';
 import test from './components/TestFile/test.vue';
 import Testdoc from './components/TestFile/TestDoc.vue';
+import note from './components/note.vue';
+
 
 import '../css/homepage.css';
 import '../css/Auth/Login.css';
