@@ -41,3 +41,6 @@ Route::get('/tests', function(){
 Route::get('/profile', function(){
     return view('profile');
 });
+Route::get('/calendar', function(){
+    return view('calendar');
+});
