@@ -1,3 +1,4 @@
+
 @import url(https://fonts.googleapis.com/css?family=Oleo%20Script);
 @import url(https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap);
 
@@ -16,23 +17,23 @@
 }
 
 #calendar .title {
-    font-family: 'Oleo Script';
-    font-size: 3.2rem;
+    font-size: 4.2rem;
     width: 55%;
 }
 
 #calendar .title a {
-    font-family: 'Oleo Script';
     text-decoration: none;
     color: #000;
+    font-family: 'Oleo Script';
+
 }
 
 .calendar-container {
-    display: flex;
-    align-items: stretch;
-    gap: 20px;
-    padding: 20px;
     background: linear-gradient(120deg, #FBD0D9 20%, #C3EBEA 80%);
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+    gap: 20px;
+    padding: 30px 0;
 }
 
 .calendar-container .left-menu {
@@ -41,7 +42,7 @@
     gap: 30px;
     border-right: 2px solid #000;
     padding: 20px;
-    width: 200px;
+    width: 250px;
 }
 
 .calendar-container .left-menu a {
@@ -50,7 +51,7 @@
     align-items: center;
     padding: 15px 30px;
     border-radius: 10px;
-    font-size: 18px;
+    font-size: 20px;
     text-decoration: none;
     gap: 10px;
     background-color: #fff;
@@ -70,25 +71,31 @@
 .calendar-box {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    height: 550px;
     padding: 20px;
-    margin: 20px 20px 150px 20px;
+    margin: 20px 20px 150px 0;
     gap: 40px;
+    row-gap: 0;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.calendar-box .calendar-header {
+.calendar-header {
+    font-size: 1.6em;
+    font-weight: bold;
     grid-column: 1 / -1;
     text-align: center;
+    height: 25px;
 }
 
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    height: 300px;
+    height: 280px;
     text-align: center;
-    margin-bottom: 20px;
+    margin-top: 15px;
+    margin-bottom: 150px;
 }
 
 .day {
@@ -101,16 +108,10 @@
     background: #f0f0f0;
     cursor: pointer;
     border: 1px solid #000;
-}
-
-.date:hover {
-    background: #ddd;
-}
-
-.date.selected {
-    background: #45539D;
-    color: #fff;
-    font-weight: bold;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .date.manual-selected {
@@ -131,9 +132,8 @@
     display: grid;
     grid-auto-rows: min-content;
     gap: 30px;
-    max-height: 250px;
+    max-height: 400px;
     overflow-y: auto;
-    scrollbar-color: #f4f4f4 transparent;
 }
 
 .schedule-box .event {
@@ -145,7 +145,7 @@
     background: #C3EBEA;
     font-size: 1rem;
     text-align: center;
-    height: 20px;
+    height: 40px;
 }
 
 .event:nth-child(even) {
@@ -156,7 +156,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 30px;
-    padding: 20px;
+    padding: 20px 20px 20px 0;
     margin-bottom: 50px;
 }
 
@@ -172,7 +172,31 @@
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     grid-row: 1;
-    height: 400px;
+    height: 500px;
+}
+
+.remind-grid .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.remind-grid .calendar-header button {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+}
+
+.month-nav{
+   font-size: 18px;
+   gap: 10px;
+   display: flex;
+   justify-content: space-between;
+}
+
+.month-nav .disabled {
+   opacity: 0.3;
+   cursor: not-allowed;
 }
 
 .time-picker-overlay {
@@ -183,13 +207,14 @@
     display: flex;
     justify-content: space-around;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-
 }
+
 .time-picker {
     display: flex;
     justify-content: center;
     width: 100%;
 }
+
 .time-columns {
     width: 80px;
     max-height: 200px;
@@ -227,6 +252,7 @@
     height: 50px;
     width: 100px;
 }
+
 .save-time-btn:hover {
     background: #ddd;
 }
@@ -254,7 +280,7 @@
 
 .content-box {
     background: #fff;
-    padding: 20px;
+    padding: 20px 40px 20px 20px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
@@ -270,7 +296,8 @@
 
 .content-area textarea {
     width: 100%;
-    height: 400px;
+    height: 500px;
+    padding: 10px;
     font-size: 18px;
     border: none;
     outline: none;
@@ -283,15 +310,29 @@
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 20px;
+    padding-left: 15px;
     margin-top: 30px;
     margin-bottom: 56px;
 }
 
-.time-setting-btn, .time-showing {
+.time-setting-btn,
+.time-showing {
     background: #d9d9d9;
     padding: 10px;
     border-radius: 10px;
     border: none;
     text-align: center;
     font-size: 20px;
+}
+
+.calendar-error-message {
+    font-size: 1.6em;
+    color: #000;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }

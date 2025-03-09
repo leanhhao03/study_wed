@@ -42,5 +42,5 @@ Route::get('/profile', function(){
 });
 
 Route::get('/calendar', function () {
-    return view('Calendar');
+    return view('calendar');
 });

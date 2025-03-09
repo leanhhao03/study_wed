@@ -80,8 +80,6 @@
 .document-container .right-container {
   height: 80vh;
   overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
   padding: 10px;
 }
 
@@ -172,7 +170,6 @@
   display: flex;
   padding: 20px;
   height: 640px;
-  scrollbar-width: none;
 }
 
 .document-area .document-content {
@@ -200,7 +197,6 @@
   display: flex;
   padding: 20px;
   overflow-y: auto;
-  scrollbar-color: #f2f2f2 transparent;
 }
 
 .document-area .document-content {
