@@ -3,32 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class AppointmentController extends Controller
 {
-    public function index()
+    public function store(Request $request, $id)
     {
-       $apponitments = Appointment::all();
-       return response()->json($apponitments);
-    }
-
-    public function store(Request $request)
-    {
+        $userId = User::find($id);
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'start_time' => 'required|date|after:now',
+            'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
         ]);
 
-        $appointment = Appointment::created([
+        $appointment = Appointment::create([
             'title' => $request->title,
             'description' => $request->description,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'user_id' => Auth::id(),
+            'start_time' => Carbon::parse($request->start_time)->setTimezone('Asia/Ho_Chi_Minh')->toDateTimeString(),
+            'end_time' => Carbon::parse($request->end_time)->setTimezone('Asia/Ho_Chi_Minh')->toDateTimeString(),
+            'user_id' => $userId->id,
         ]);
 
         return response()->json($appointment, 201);
@@ -36,10 +33,11 @@ class AppointmentController extends Controller
 
     public function show($id)
     {
-        $appointment = Appointment::find($id);
-        if (!$appointment) {
+        $user = User::find($id);
+        if (!$user) {
             return response()->json(['message' => 'Appointment not found'], 404);
         }
+        $appointment = Appointment::where('user_id', $id)->get();
 
         return response()->json($appointment);
     }
@@ -75,4 +73,15 @@ class AppointmentController extends Controller
         $appointment->delete();
         return response()->json(['message' => 'Appointment deleted']);
     }
+
+    public function upcomingReminders()
+{
+    $now = now();
+    $reminderTime = $now->addMinutes(5);
+
+    $appointments = Appointment::whereBetween('end_time', [$now, $reminderTime])->get();
+
+    return response()->json($appointments);
+}
+
 }

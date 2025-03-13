@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\Auth\AuthenticateController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Document\FileController;
 use App\Http\Controllers\Auth\ModifyAuthenticate;
@@ -12,13 +13,15 @@ use App\Http\Controllers\Exam\ExamResultController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\Verify\ResetPasswordController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
     Route::post('register', [RegisterController::class, 'register']);
-    Route::post('login', [AuthenticateController::class, 'LoginUser']);
+    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
     Route::post('edit/{id}', [ModifyAuthenticate::class, 'updateProfile']);
-    Route::get('/user/{id}', [AuthenticateController::class, 'getUser']);
+    Route::get('/user', [AuthenticatedSessionController::class, 'getUser'])->middleware('auth');
 });
 
 //Mail Controller

@@ -19,7 +19,6 @@
           <FontAwesomeIcon :icon="['fas', 'user']" class="icon-user" /> Đăng nhập
         </a>
         <a v-else href="#" @click.prevent="redirectToProfile" class="user-info">
-          <img v-if="user.profile_picture" :src="user.profile_picture" alt="User Avatar" class="user-avatar">
           <span class="user-name">{{ user.name }}</span>
         </a>
       </div>
@@ -72,28 +71,45 @@ import LoginForm from '@/components/Auth/Login.vue';
 
 library.add(faHome, faEye, faEyeSlash, faBell, faBook, faPen, faBookOpen, faGamepad, faCalendarAlt, faUsers);
 
+axios.defaults.withCredentials = true; 
+
 const isLoggedIn = ref(false);
 const user = ref({ name: "Người dùng" });
 const showLogin = ref(false);
 
-const handleLoginSuccess = () => {
+const handleLoginSuccess = async () => {
   showLogin.value = false;
-  isLoggedIn.value = true;
+
+  try {
+    await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie");
+    const res = await axios.get("http://127.0.0.1:8000/api/auth/user", { withCredentials: true });
+
+    if (res.status === 200) {
+      user.value = res.data;
+      isLoggedIn.value = true;
+    }
+  } catch (error) {
+    console.error("Không thể lấy thông tin người dùng sau khi đăng nhập:", error.response?.data || error);
+  }
 };
+
 
 const getID = localStorage.getItem('user_id');
 
 onMounted(async () => {
   try {
-    if(getID) {
-      const res = await axios.get(`/api/auth/user/${getID}`);
+    await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie"); // Quan trọng!
+    const res = await axios.get("http://127.0.0.1:8000/api/auth/user", { withCredentials: true });
+
+    if (res.status === 200) {
       user.value = res.data;
       isLoggedIn.value = true;
     }
   } catch (error) {
-    console.error(error);
+    console.error("Không thể lấy thông tin người dùng:", error.response?.data || error);
   }
 });
+
 
 const redirectToProfile = () => {
   window.location.href = "/profile";

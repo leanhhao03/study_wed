@@ -13,10 +13,11 @@ class FavoriteDocument extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'document_id' => 'required|exists:documents,id',
+            'userID' => 'required',
+            'document_id' => 'required|exists:documents,Dcm_id',
         ]);
 
-        $exits = Favorite::where('user_id', Auth::id())
+        $exits = Favorite::where('user_id', $request->userID)
             ->where('document_id', $request->document_id)
             ->exists();
 
@@ -26,7 +27,7 @@ class FavoriteDocument extends Controller
 
         Favorite::create
         ([
-            'user_id' => Auth::id(),
+            'user_id' => $request->userID,
             'document_id' => $request->document_id,
         ]);
 
@@ -45,12 +46,12 @@ class FavoriteDocument extends Controller
         return response()->json(['message' => 'Document removed from favorites'], 200);
     }
 
-    public function index()
+    public function index($id)
     {
-        $documents = Document::whereIn('Dcm_id', function($query) {
+        $documents = Document::whereIn('Dcm_id', function($query) use ($id) {
             $query->select('document_id')
                   ->from('favorites')
-                  ->where('user_id', Auth::id());
+                  ->where('user_id', $id);
         })->get();
         return response()->json($documents);
     }

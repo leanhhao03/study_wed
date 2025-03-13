@@ -70,20 +70,29 @@ const handleLogin = async () => {
   }
 
   try {
-    const response = await axios.post("http://127.0.0.1:8000/api/auth/login", formData.value, { withCredentials: true });
+    const response = await axios.post("http://127.0.0.1:8000/api/auth/login", formData.value, {
+      withCredentials: true, // Giữ session để xác thực
+    });
 
-    if (response.status === 200) {
-      localStorage.setItem('user_id', response.data.user_id);
-      if (rememberMe.value) localStorage.setItem('remember_email', formData.value.email);
-      
+    if (response.status === 204) { // Laravel Breeze trả về 204 nếu đăng nhập thành công
       successMessage.value = "Đăng nhập thành công!";
+      
+      // Lưu trạng thái đăng nhập vào localStorage
+      localStorage.setItem('auth', 'true');
 
-      setTimeout(() => window.location.reload(), 500);
+      // Nếu chọn "Nhớ thông tin", lưu email vào localStorage
+      if (rememberMe.value) localStorage.setItem('remember_email', formData.value.email);
+
+      // Chuyển hướng sau khi đăng nhập thành công
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 500);
     }
   } catch (error) {
-    errorMessage.value = error.response?.data?.error || "Đăng nhập thất bại.";
+    errorMessage.value = error.response?.data?.message || "Đăng nhập thất bại.";
   }
-};  
+};
+
 </script>
 
 <style scoped>

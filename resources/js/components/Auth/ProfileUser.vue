@@ -359,8 +359,8 @@
     </g>
   </svg>
 </div>
-                      <p>Number of times to done the test:</p>
-                      <p>EX: Đã hoàn thành 15 bài kiểm tra</p> 
+                      <p>Number of days joined Think Sync:</p>
+                      <p>EX: Đã tham gia {{ daysSinceJoined }} ngày</p> 
                   </div>
                   <div class="stat-item">
                     <div class="star-1">
@@ -612,7 +612,7 @@
 </template>
 
 <script setup>
-  import { ref, onMounted } from "vue";
+  import { ref, onMounted, computed } from "vue";
   import axios from "axios";
   import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   import { library } from '@fortawesome/fontawesome-svg-core';
@@ -633,8 +633,8 @@
   const newPassword = ref("");
   const showEmailError = ref(false);
   const showPasswordError = ref(false);
-  const UserId = localStorage.getItem('user_id');
   const user = ref({});
+  const UserId = ref();
 
   const openEditForm = () => {
       showEditGmailForm.value = false;
@@ -665,12 +665,13 @@
   }
 };
 
-const fetchUserInfo = async () =>{
-  try{
-    const response = await axios.get(`/api/auth/user/${UserId}`);
+const fetchUserInfo = async () => {
+  try {
+    const response = await axios.get('/api/auth/user', { withCredentials: true });
     user.value = response.data;
-  }catch (error){
-    console.error("Lỗi khi lấy thông tin người dùng:", error.response?.data || error );
+    UserId.value = user.value.id; 
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin người dùng:", error.response?.data || error);
   }
 };
 
@@ -690,7 +691,8 @@ const updateProfile = async () => {
 
 
     try {
-        const response = await axios.post(`/api/auth/edit/${UserId}`, formData, {
+
+        const response = await axios.post(`/api/auth/edit/${UserId.value}`, formData, {
         });
         showEditForm.value = false;
         setTimeout(() => {
@@ -701,6 +703,16 @@ const updateProfile = async () => {
         console.error("Lỗi khi cập nhật:", error.response?.data || error);
     }
 };
+
+const daysSinceJoined = computed(() => {
+  if (!user.value?.created_at) return 0;
+
+  const [day, month, year] = user.value.created_at.split("/"); // Tách d/m/Y
+  const createdDate = new Date(year, month - 1, day).getTime(); // Chuyển thành timestamp
+  const now = Date.now();
+
+  return Math.floor((now - createdDate) / (1000 * 60 * 60 * 24)); // Số ngày
+});
 
   const validateOldPassword = () => {
       if (oldPassword.value !== "correct_password") {
