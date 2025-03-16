@@ -44,3 +44,7 @@ Route::get('/profile', function(){
 Route::get('/calendar', function () {
     return view('calendar');
 })->name('calendar');
+
+Route::get('/UserManagement', function () {
+    return view('UserManagement');
+})->name('UserManagement');

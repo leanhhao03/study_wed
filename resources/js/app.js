@@ -8,7 +8,7 @@ import Reset_password from './components/Auth/Reset_password.vue';
 import Profile from './components/Auth/ProfileUser.vue';
 import Testdoc from './components/TestFile/TestDoc.vue';
 import calendar from './components/calendar.vue';
-
+import UserManagement from './components/UserManagement.vue';
 
 import '../css/homepage.css';
 import '../css/Auth/Login.css';
@@ -19,7 +19,7 @@ import '../css/Auth/Reset_password.css';
 import '../css/TestFile/testdoc.css'
 import '../css/Auth/ProfileUser.css';
 import '../css/calendar.css';
-
+import '../css/UserManagement.css';
 
 createApp(homepage).mount('#app');
 createApp(Login).mount('#login');
@@ -30,3 +30,4 @@ createApp(test).mount('#test');
 createApp(Testdoc).mount('#testdoc');
 createApp(Profile).mount('#profile');
 createApp(calendar).mount('#calendar');
+createApp(UserManagement).mount('#UserManagement');
