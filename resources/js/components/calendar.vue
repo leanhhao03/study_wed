@@ -32,11 +32,17 @@
                     <div v-for="date in nextMonthDays" :key="'next-' + date" class="date disabled">{{ date }}</div>
                 </div>
 
-                <div v-if="!isCollapsed" class="schedule-box">
-                    <div v-for="(event, index) in events" :key="index" class="event">
-                        <span>{{ event.date }}, {{ event.month }}</span>
-                        <span>{{ event.time }}</span>
-                        <span>{{ event.content }}</span>
+                <div class="schedule-box">
+                    <h3>Danh sách nhắc hẹn</h3>
+                    <div v-for="appointment in appointments" :key="appointment.id" class="event">
+                        <span>{{ appointment.formattedDate }}</span>
+                        <span>{{ appointment.formattedTime}}</span>
+                        <span>{{ appointment.title }}</span>
+                        <FontAwesomeIcon 
+                            :icon="['fas', 'trash']" 
+                            class="delete-icon" 
+                            @click="deleteAppointment(appointment.id)" 
+                        />
                     </div>
                 </div>
             </div>
@@ -116,18 +122,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBook, faPen, faBookOpen, faCalendarAlt, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faPen, faBookOpen, faCalendarAlt, faArrowLeft, faArrowRight, faTrash } from '@fortawesome/free-solid-svg-icons';
+import axios from "axios";
 
-library.add(faBook, faPen, faBookOpen, faCalendarAlt, faArrowLeft, faArrowRight);
+library.add(faBook, faPen, faBookOpen, faCalendarAlt, faArrowLeft, faArrowRight, faTrash);
 
 const today = new Date().getDate();
 const currentMonthIndex = ref(new Date().getMonth());
 const currentYear = ref(new Date().getFullYear());
 const selectedDate = ref(null);
-const isCollapsed = ref(false);
 const reminderTitle = ref('');
 const reminderContent = ref('');
 const selectedHour = ref("01");
@@ -136,6 +142,7 @@ const selectedPeriod = ref("AM");
 const selectedTime = ref(null);
 const showTimePicker = ref(false);
 const errorMessage = ref('');
+const appointments = ref([]);
 
 const currentMonth = computed(() => new Date(currentYear.value, currentMonthIndex.value).toLocaleString('default', { month: 'long' }));
 
@@ -221,60 +228,93 @@ const toggleTimePicker = () => {
     showTimePicker.value = !showTimePicker.value;
 };
 
-// Hàm tạo nhắc hẹn
-const createReminder = () => {
-    const selectedFullDate = new Date(currentYear.value, currentMonthIndex.value, selectedDate.value);
-    const todayFullDate = new Date();
-    todayFullDate.setHours(0, 0, 0, 0);
-
-    if (selectedFullDate < todayFullDate) {
-        errorMessage.value = "Ngày đã chọn không hợp lệ.";
-        setTimeout(() => (errorMessage.value = ""), 3000);
-        return;
+const fetchAppointments = async () => {
+    try {
+        const response = await axios.get("api/appointments");
+        appointments.value = response.data.map(appointment => {
+            const endTime = new Date(appointment.end_time);
+            return {
+                ...appointment,
+                formattedDate: endTime.toLocaleDateString(),
+                formattedTime: endTime.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) 
+            };
+        });
+    } catch (error) {
+        console.error("Lỗi khi tải danh sách nhắc hẹn:", error);
     }
+};
+
+// Hàm tạo nhắc hẹn
+const createReminder = async () => {
+    const now = new Date();
+    now.setSeconds(0, 0); // Xóa giây và mili giây để so sánh chính xác
 
     if (!selectedDate.value) {
         errorMessage.value = "Vui lòng chọn ngày.";
         setTimeout(() => (errorMessage.value = ""), 3000);
         return;
     }
+
+    // Xây dựng ngày đã chọn
+    const selectedFullDate = new Date(currentYear.value, currentMonthIndex.value, selectedDate.value);
+    selectedFullDate.setHours(0, 0, 0, 0); // Đặt về 00:00 để so sánh đúng
+
+    if (selectedFullDate < now.setHours(0, 0, 0, 0)) {
+        errorMessage.value = "Ngày đã chọn không hợp lệ.";
+        setTimeout(() => (errorMessage.value = ""), 3000);
+        return;
+    }
+
     if (!reminderTitle.value) {
         errorMessage.value = "Vui lòng nhập tiêu đề.";
         setTimeout(() => (errorMessage.value = ""), 3000);
         return;
     }
+
     if (!reminderContent.value) {
         errorMessage.value = "Vui lòng nhập nội dung.";
         setTimeout(() => (errorMessage.value = ""), 3000);
         return;
     }
+
     if (!selectedTime.value) {
         errorMessage.value = "Vui lòng chọn thời gian.";
         setTimeout(() => (errorMessage.value = ""), 3000);
         return;
     }
-    const now = new Date();
+
+    // Chuyển đổi thời gian đã chọn sang định dạng 24 giờ
     const [hour, minute, period] = selectedTime.value.split(/[: ]/);
     let selectedHour24 = parseInt(hour);
     if (period === "PM" && selectedHour24 !== 12) selectedHour24 += 12;
     if (period === "AM" && selectedHour24 === 12) selectedHour24 = 0;
-    
+
+    // Gộp ngày + giờ + phút
     const selectedDateTime = new Date(currentYear.value, currentMonthIndex.value, selectedDate.value, selectedHour24, parseInt(minute));
-    
-    if (selectedDateTime - now < 30 * 60 * 1000) {
-        errorMessage.value = "Vui lòng chọn thời gian cách hiện tại 30'.";
+
+    // Kiểm tra nếu hẹn trong ngày hôm nay thì phải sau thời gian hiện tại ít nhất 30 phút
+    if (selectedFullDate.getTime() === now.setHours(0, 0, 0, 0) && (selectedDateTime - now < 30 * 60 * 1000)) {
+        errorMessage.value = "Vui lòng chọn thời gian cách hiện tại ít nhất 30 phút.";
         setTimeout(() => (errorMessage.value = ""), 3000);
         return;
     }
 
-    events.value.push({
-        date: selectedDate.value,
-        month: currentMonth.value,
-        time: selectedTime.value,
-        content: reminderContent.value,
-    });
+    // Gửi lên API 
+    try {
+        const response = await axios.post("api/appointments", {
+            title: reminderTitle.value,
+            description: reminderContent.value,
+            start_time: new Date().toISOString(),
+            end_time: selectedDateTime.toISOString(),
+        });
 
-    // Reset các biến về mặc định
+        // Thêm vào danh sách hiển thị
+        events.value.push(response.data);
+    } catch (error) {
+        console.error("Lỗi khi tạo nhắc hẹn:", error);
+    }
+
+    // Reset form
     selectedDate.value = null;
     reminderTitle.value = "";
     reminderContent.value = "";
@@ -282,10 +322,10 @@ const createReminder = () => {
     selectedMinute.value = "00";
     selectedPeriod.value = "AM";
     selectedTime.value = null;
-
     showCalendarBox.value = true;
 };
 
+onMounted(fetchAppointments);
 </script>
 
 <script>
@@ -296,9 +336,9 @@ export default {
     data() {
         return {
             leftMenuButtons: [
-                { text: "Ôn tập", icon: "book", link: "/document" },
-                { text: "Thi thử", icon: "pen", link: "/test" },
-                { text: "Ghi nhớ", icon: "book-open", link: "/note" },
+                { text: "Ôn tập", icon: "book", link: "/documents" },
+                { text: "Thi thử", icon: "pen", link: "/tests" },
+                { text: "Ghi nhớ", icon: "book-open", link: "/notes" },
                 { text: "Đặt lịch", icon: "calendar-alt", link: "/calendar" },
             ]
         };

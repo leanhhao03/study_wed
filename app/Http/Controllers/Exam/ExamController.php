@@ -38,7 +38,7 @@ class ExamController extends Controller
         }
 
         //Kiểm tra xem user đã bắt đầu bài thi này chưa
-        $user = $request->input('user_id'); 
+        $user = Auth::id(); 
         $existingExamResult = ExamResult::where('exam_id', $id)
             ->where('user_id', $user)
             ->first();

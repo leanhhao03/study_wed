@@ -19,8 +19,6 @@ Route::get('/register', function () {
     return view('register');
 });
 
-//logout
-Route::post('/logout', [AuthenticateController::class, 'LogoutUser'])->middleware('auth'); 
 
 //Route document
 Route::get('/documents', function(){
@@ -43,4 +41,8 @@ Route::get('/profile', function(){
 
 Route::get('/calendar', function () {
     return view('calendar');
+});
+
+Route::get('/notes', function () {
+    return view('note');
 });

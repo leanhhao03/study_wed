@@ -69,10 +69,9 @@ Route::prefix('/exams')->group(function () {
     Route::delete('/notes/{id}', [NoteController::class, 'destroy']); // Xóa ghi chú
 
 //Apponiterment Controller
-Route::prefix('/appointments')->group(function () {
-    Route::get('/', [AppointmentController::class, 'index']);
+Route::prefix('/appointments')->middleware('auth')->group(function () {
     Route::post('/', [AppointmentController::class, 'store']);
-    Route::get('/{id}', [AppointmentController::class, 'show']);
+    Route::get('/', [AppointmentController::class, 'show']);
     Route::put('/{id}', [AppointmentController::class, 'update']);
     Route::delete('/{id}', [AppointmentController::class, 'destroy']);
 });
@@ -82,4 +81,5 @@ Route::prefix('/favorites')->group(function () {
     Route::post('/', [FavoriteDocument::class, 'store']);
     Route::delete('/', [FavoriteDocument::class, 'destroy']);
     Route::get('/', [FavoriteDocument::class, 'index']);
+    Route::post('/check', [FavoriteDocument::class, 'checkFavorite']);
 });

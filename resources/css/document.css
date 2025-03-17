@@ -229,3 +229,22 @@
   -ms-overflow-style: none; 
   border: none;
 }
+.right-container {
+  position: relative;
+  display: inline-block;
+}
+
+.favorite-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 25px;
+  color: black;
+}
+
+.favorite-button .favorited {
+  color: red;
+}

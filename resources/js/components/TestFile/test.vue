@@ -41,15 +41,26 @@
         <div class="test-card" 
             v-for="exam in exams" 
             :key="exam.id" 
-            @click="handleStartExam(exam.id)">
-          <a :href="`/test-doc?id=` + exam.id" class="test-card-link">
+            @click="openConfirmPopup(exam)">
+          <div class="test-card-link">
             <div class="test-title">{{ exam.title }}</div>
             <div class="test-info">
               <span>Thời gian: {{ exam.duration }} phút</span>
               <span>Môn học: {{ exam.subject }}</span>
             </div>
-          </a>
+          </div>
         </div>    
+      </div>
+    </div>
+
+    <!-- Popup xác nhận làm bài thi -->
+    <div v-if="selectedExam" class="popup-overlay">
+      <div class="popup">
+        <p>Bạn sẽ bắt đầu vào làm bài chứ?</p>
+        <div class="popup-buttons">
+          <button class="btn-confirm" @click="confirmStartExam">Vào làm</button>
+          <button class="btn-cancel" @click="selectedExam = null">Không</button>
+        </div>
       </div>
     </div>
   </div>
@@ -68,7 +79,8 @@ const searchQuery = ref('');
 const exams = ref([]);
 const loading = ref(false);
 const subjects = ref([]);
-const selectedSubjects = ref([]); 
+const selectedSubjects = ref([]);
+const selectedExam = ref(null);
 
 const API_URL = 'http://127.0.0.1:8000/api';
 
@@ -77,8 +89,6 @@ const fetchSubjects = async () => {
   try {
     const response = await axios.get(`${API_URL}/exams`);
     const examList = response.data;
-
-    // Lọc danh sách môn học duy nhất
     subjects.value = [...new Set(examList.map(exam => exam.subject))];
   } catch (error) {
     console.error('Lỗi khi tải danh sách môn học:', error);
@@ -96,25 +106,36 @@ const toggleSubject = (subject) => {
   fetchExams();
 };
 
-const handleStartExam = async (examId) => {
-  try {
-    const userId = localStorage.getItem("user_id"); 
+const openConfirmPopup = (exam) => {
+  selectedExam.value = exam;
+};
 
-    if (!userId) {
+const confirmStartExam = async () => {
+  if (!selectedExam.value) return;
+  try {
+    // Lấy user từ session Laravel Breeze
+    const { data: user } = await axios.get("/api/auth/user");
+    if (!user || !user.id) {
+      alert("Bạn chưa đăng nhập!");
       return;
     }
 
-    const response = await axios.post(`${API_URL}/exams/start/${examId}`, {
-      user_id: userId, 
-    });
+    // Gọi API để bắt đầu bài thi
+    const response = await axios.post(`${API_URL}/exams/start/${selectedExam.value.id}`);
 
-    console.log(response.data.message);
-    window.location.href = `/test-doc?id=${examId}`;
+    // Kiểm tra nếu đã bắt đầu trước đó
+    if (response.data.message.includes("trước đó")) {
+      if (!confirm("Bạn đã bắt đầu bài thi trước đó. Tiếp tục làm bài?")) return;
+    }
+
+    // Chuyển hướng đến trang làm bài
+    window.location.href = `/test-doc?id=${selectedExam.value.id}`;
   } catch (error) {
     console.error("Lỗi khi bắt đầu bài thi:", error.response?.data || error);
+  } finally {
+    selectedExam.value = null;
   }
 };
-
 // Gọi API lấy danh sách bài thi với filter
 const fetchExams = async () => {
   loading.value = true;
@@ -126,7 +147,7 @@ const fetchExams = async () => {
     }
     if (searchQuery.value){
       params.search = searchQuery.value;
-    };
+    }
 
     const response = await axios.get(`${API_URL}/exams`, { params });
     exams.value = response.data;
@@ -137,10 +158,9 @@ const fetchExams = async () => {
   }
 };
 
-
-
 onMounted(() => {
   fetchExams();
   fetchSubjects();
 });
 </script>
+

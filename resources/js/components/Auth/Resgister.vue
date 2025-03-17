@@ -130,7 +130,7 @@
   try {
     const response = await axios.post('http://127.0.0.1:8000/api/auth/register', formData.value);
     successMessage.value = response.data.message;
-    window.location.href = '/login';
+    window.location.href = '/';
   } catch (error) {
     if (error.response && error.response.data.errors) {
       errorMessage.value = Object.values(error.response.data.errors).join(' ');

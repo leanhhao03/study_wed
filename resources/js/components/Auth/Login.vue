@@ -13,13 +13,13 @@
         <form @submit.prevent="handleLogin">
           <div class="input-group">
             <label for="email">Email người dùng:</label>
-            <input type="email" id="email" v-model.trim="formData.email" required />
+            <input type="email" id="email" v-model.trim="formData.email"/>
           </div>
 
           <div class="input-group">
             <label for="password">Mật khẩu:</label>
             <div class="password-container">
-              <input :type="showPassword ? 'text' : 'password'" id="password" v-model.trim="formData.password" required />
+              <input :type="showPassword ? 'text' : 'password'" id="password" v-model.trim="formData.password" />
               <FontAwesomeIcon :icon="showPassword ? 'eye-slash' : 'eye'" class="toggle-password-icon" @click="togglePassword" />
             </div>
           </div>
@@ -71,24 +71,20 @@ const handleLogin = async () => {
 
   try {
     const response = await axios.post("http://127.0.0.1:8000/api/auth/login", formData.value, {
-      withCredentials: true, // Giữ session để xác thực
+      withCredentials: true,
     });
 
-    if (response.status === 204) { // Laravel Breeze trả về 204 nếu đăng nhập thành công
+    if (response.status === 204 || response.status === 200) {
       successMessage.value = "Đăng nhập thành công!";
-      
-      // Lưu trạng thái đăng nhập vào localStorage
       localStorage.setItem('auth', 'true');
-
-      // Nếu chọn "Nhớ thông tin", lưu email vào localStorage
       if (rememberMe.value) localStorage.setItem('remember_email', formData.value.email);
 
-      // Chuyển hướng sau khi đăng nhập thành công
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.reload();
       }, 500);
     }
   } catch (error) {
+    console.error("Login Error:", error.response?.data);
     errorMessage.value = error.response?.data?.message || "Đăng nhập thất bại.";
   }
 };

@@ -15,11 +15,15 @@
             <FontAwesomeIcon :icon="['fas', 'bell']" class="icon-bell" />
           </button>
         </div>
-        <a v-if="!isLoggedIn" href="#" @click.prevent="showLogin = true" class="login-link">
-          <FontAwesomeIcon :icon="['fas', 'user']" class="icon-user" /> Đăng nhập
-        </a>
-        <a v-else href="#" @click.prevent="redirectToProfile" class="user-info">
+        <div class="user-menu" v-if="isLoggedIn" @click="toggleDropdown">
           <span class="user-name">{{ user.name }}</span>
+          <div v-if="dropdownVisible" class="dropdown">
+            <a href="#" @click.prevent="redirectToProfile">Thông tin cá nhân</a>
+            <a href="#" @click.prevent="logout">Đăng xuất</a>
+          </div>
+        </div>
+        <a v-else href="#" @click.prevent="showLogin = true" class="login-link">
+          <FontAwesomeIcon :icon="['fas', 'user']" class="icon-user" /> Đăng nhập
         </a>
       </div>
     </header>
@@ -27,7 +31,27 @@
     <!-- Main content -->
     <main v-if="!showLogin" class="main">
       <div class="top-grid">
-        <div class="top-grid-card" v-for="n in 5" :key="n"></div>
+        <div class="reminder-card">
+          <p>Bạn có lịch học nè!</p>
+          <div class="reminder-details">
+            <span class="label">Thời gian</span>
+            <span class="label">Chủ đề</span>
+          </div>
+        </div>
+        <div v-if="recentNotes.length === 0" class="empty-note">❌ Không có ghi chú nào!</div>
+        <div v-else class="recent-notes">
+          <div class="recent-note-group" v-for="note in recentNotes" :key="note.id">
+            <div class="recent-note-card">
+              <div class="recent-note-content">
+                <strong>{{ note.title }}</strong>
+                <p>{{ note.content }}</p>
+              </div>
+              <div class="recent-note-info">
+                <p>{{ formatDate(note.createdAt) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="function-card">
         <button 
@@ -41,15 +65,21 @@
       </div>
       <div class="bottom-grid">
         <button class="large-card">
-          <div class="card-content">Nội dung preview...</div>
+          <div v-if="selectedPdf" class="pdf-container">
+            <iframe :src="selectedPdf" frameborder="0"></iframe>
+          </div>
+          <div v-else class="card-content">Nội dung preview...</div>
         </button>
+
         <div class="small-card-container">
-          <button class="small-card">
-            <div class="card-content"></div>
-          </button>
-          <button class="small-card">
-            <div class="card-content"></div>
-          </button>
+          <div v-for="doc in favoriteDocuments" :key="doc.Dcm_id" class="small-card-wrapper">
+            <button class="small-card menu-item" @click="getFullPdf(doc.Dcm_id)">
+              <img :src="getPreviewUrl(doc.dcm_preview_path)" alt="Preview" class="preview-image" />
+            </button>
+            <button class="favorite-button" @click.stop="toggleFavorite(doc.Dcm_id)">
+              <FontAwesomeIcon :icon="[isFavorited(doc.Dcm_id) ? 'fas' : 'far', 'heart']" :class="{ 'favorited': isFavorited(doc.Dcm_id) }" />
+            </button>
+          </div>
         </div>
       </div>
     </main>
@@ -66,54 +96,12 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBell, faBook, faPen, faBookOpen, faGamepad, faCalendarAlt, faUsers, faHome, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faBook, faPen, faBookOpen, faCalendarAlt, faHome, faEye, faEyeSlash, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faHeart as faHeartRegular } from '@fortawesome/free-regular-svg-icons';
 import LoginForm from '@/components/Auth/Login.vue';
 
-library.add(faHome, faEye, faEyeSlash, faBell, faBook, faPen, faBookOpen, faGamepad, faCalendarAlt, faUsers);
-
-axios.defaults.withCredentials = true; 
-
-const isLoggedIn = ref(false);
-const user = ref({ name: "Người dùng" });
-const showLogin = ref(false);
-
-const handleLoginSuccess = async () => {
-  showLogin.value = false;
-
-  try {
-    await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie");
-    const res = await axios.get("http://127.0.0.1:8000/api/auth/user", { withCredentials: true });
-
-    if (res.status === 200) {
-      user.value = res.data;
-      isLoggedIn.value = true;
-    }
-  } catch (error) {
-    console.error("Không thể lấy thông tin người dùng sau khi đăng nhập:", error.response?.data || error);
-  }
-};
-
-
-const getID = localStorage.getItem('user_id');
-
-onMounted(async () => {
-  try {
-    await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie"); // Quan trọng!
-    const res = await axios.get("http://127.0.0.1:8000/api/auth/user", { withCredentials: true });
-
-    if (res.status === 200) {
-      user.value = res.data;
-      isLoggedIn.value = true;
-    }
-  } catch (error) {
-    console.error("Không thể lấy thông tin người dùng:", error.response?.data || error);
-  }
-});
-
-
-const redirectToProfile = () => {
-  window.location.href = "/profile";
-};
+library.add(faHome, faEye, faEyeSlash, faBell, faBook, faPen, faBookOpen, faCalendarAlt, faHeart, faHeartRegular);
+axios.defaults.withCredentials = true;
 
 const buttons = ref([
   { text: "Ôn tập", icon: ['fas', 'book'], color: 'function-card-Ontap', route: "/documents" },
@@ -122,18 +110,114 @@ const buttons = ref([
   { text: "Đặt lịch", icon: ['fas', 'calendar-alt'], color: 'function-card-DatLich', route: "/calendar" },
 ]);
 
+const isLoggedIn = ref(false);
+const user = ref({ name: "Người dùng" });
+const showLogin = ref(false);
+const dropdownVisible = ref(false);
+const favoriteDocuments = ref([]);
+const favorites = ref(new Set());
+const isFavorited = (id) => favorites.value.has(id);
+const selectedPdf = ref(null);
+const recentNotes = ref([]);
+
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+};
+
+const handleLoginSuccess = async () => {
+  showLogin.value = false;
+  try {
+    await axios.get("/sanctum/csrf-cookie");
+    const res = await axios.get("/api/auth/user");
+    if (res.status === 200) {
+      user.value = res.data;
+      isLoggedIn.value = true;
+    }
+  } catch (error) {
+    console.error("Không thể lấy thông tin người dùng sau khi đăng nhập:", error);
+  }
+};
+
+
+const fetchFavorites = async () => {
+  try {
+    const res = await axios.get("/api/favorites");
+    favorites.value = new Set(res.data.map(doc => doc.Dcm_id));
+    favoriteDocuments.value = res.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách yêu thích:", error);
+  }
+};
+
+const fetchNotes = async () => {
+  try{
+    const response = await axios.get("/api/notes", {withCredentials: true});
+
+    recentNotes.value = response.data.map(note => ({
+            id: note.id,
+            title: note.title,
+            content: note.content,
+            createdAt: new Date(note.created_at),
+        }));
+
+    notes.value = recentNotes.value.slice(0, 3);
+  }catch (error) {
+    console.log("lỗi không thể lấy Notes:", error)
+  }
+}
+
+const getPreviewUrl = (path) => {
+  return `http://127.0.0.1:8000/storage/${path}`;
+};
+
+const getFullPdf = async (id) => {
+  try {
+    const response = await axios.get(`/api/documents/full/${id}`);
+    selectedPdf.value = response.data.file_url;
+  } catch (error) {
+    console.error("Lỗi khi mở tài liệu:", error);
+  }
+};
+
+onMounted(async () => {
+  try {
+    await axios.get("/sanctum/csrf-cookie");
+    const res = await axios.get("/api/auth/user");
+    if (res.status === 200) {
+      user.value = res.data;
+      isLoggedIn.value = true;
+      fetchFavorites();
+      fetchNotes();
+    }
+  } catch (error) {
+    console.error("Không thể lấy thông tin người dùng:", error);
+  }
+});
+
+const toggleDropdown = () => {
+  dropdownVisible.value = !dropdownVisible.value;
+};
+
+const redirectToProfile = () => {
+  window.location.href = "/profile";
+};
+
+const logout = async () => {
+  try {
+    await axios.post("/api/auth/logout");
+    isLoggedIn.value = false;
+    user.value = { name: "Người dùng" };
+  } catch (error) {
+    console.error("Lỗi khi đăng xuất:", error);
+  }
+};
+
 const redirectTo = (route) => {
   window.location.href = route;
 };
 </script>
-
-<style scoped>
-.login-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: white;
-  z-index: 1000;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-</style>

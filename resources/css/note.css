@@ -22,6 +22,7 @@
 }
 
 #note .title a {
+    font-family: 'Oleo Script';
     text-decoration: none;
     color: #000;
 }
@@ -79,7 +80,7 @@
     scrollbar-color: transparent transparent;
 }
 
-.note-grid .search-bar {
+.note-grid .add-note {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -92,7 +93,7 @@
     gap: 10px;
 }
 
-.note-grid .search-bar input {
+.note-grid .add-note input {
     flex: 1;
     border: none;
     outline: none;
@@ -101,12 +102,12 @@
     width: 50%;
 }
 
-.note-grid .search-bar-buttons {
+.note-grid .add-note-buttons {
     display: flex;
     gap: 10px;
 }
 
-.note-grid .search-bar-button {
+.note-grid .add-note-button {
     background: none;
     border: none;
     cursor: pointer;
@@ -199,7 +200,7 @@ img:focus, img:active {
     gap: 10px;
 }
 
-.note-group .search-bar {
+.note-group .add-note {
     display: flex;
     align-items: center;
     background: #fff;
@@ -235,3 +236,37 @@ img:focus, img:active {
     padding: 10px;
     box-sizing: border-box;
 }
+.note-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.note-table th {
+    background-color: white;
+    font-weight: bold;
+    padding: 12px;
+    text-align: center;
+}
+
+.note-table td {
+    padding: 10px;
+    text-align: center;
+}
+
+.note-table tr:nth-child(even) {
+    background-color: #d4f1f4; /* Màu xanh nhạt */
+}
+
+.note-table tr:nth-child(odd) {
+    background-color: white; /* Màu trắng */
+}
+
+.note-table img {
+    max-width: 50px;
+    height: auto;
+    border-radius: 5px;
+}
+

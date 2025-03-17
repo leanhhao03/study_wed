@@ -10,9 +10,9 @@ use Illuminate\Support\Carbon;
 
 class AppointmentController extends Controller
 {
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
-        $userId = User::find($id);
+        $userId = Auth::user();
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -31,14 +31,14 @@ class AppointmentController extends Controller
         return response()->json($appointment, 201);
     }
 
-    public function show($id)
+    public function show()
     {
-        $user = User::find($id);
+        $user = Auth::user();
         if (!$user) {
             return response()->json(['message' => 'Appointment not found'], 404);
         }
-        $appointment = Appointment::where('user_id', $id)->get();
-
+        
+        $appointment = Appointment::where('user_id', $user->id)->get();
         return response()->json($appointment);
     }
 

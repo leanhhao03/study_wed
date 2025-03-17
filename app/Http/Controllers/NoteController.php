@@ -14,8 +14,9 @@ class NoteController extends Controller
      */
     public function index()
     {
-        $notes = Auth::user()->notes;
-        return response()->json($notes);
+            $notes = Note::with('user')->where('user_id', Auth::id())->get();
+            return response()->json($notes);
+        
     }
 
     /**
@@ -34,7 +35,7 @@ class NoteController extends Controller
         $note = Note::create([
             'title' => $request->title,
             'content' => $request->content,
-            'user_id' => 1, // Gán user_id
+            'user_id' => Auth::id(),
         ]);
 
         return response()->json($note, 201);

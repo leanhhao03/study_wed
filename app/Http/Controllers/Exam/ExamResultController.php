@@ -15,7 +15,7 @@ class ExamResultController extends Controller
     public function submit(Request $request, $examId)
     {
         // Lấy user_id từ request
-        $user = $request->input('user_id'); 
+        $user = Auth::id(); 
         if (!$user) {
             return response()->json(['message' => 'Thiếu thông tin người dùng!'], 400);
         }

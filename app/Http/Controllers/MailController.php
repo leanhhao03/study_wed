@@ -33,10 +33,17 @@ class MailController extends Controller
             ['token' => Hash::make($otp), 'created_at' => now()]
         );
 
+        $username = explode('@', $user->email)[0];
+
         // Nội dung email
         $details = [
             'title' => 'Thay đổi mật khẩu',
-            'body' => "Mã xác nhận đặt lại mật khẩu của bạn là: **$otp** (có hiệu lực trong 15 phút)",
+            'body' => "Chúng tôi  gửi  email này để thông báo rằng bạn đã thực hiện thay đổi mật khẩu cho tài khoản Thinksyns của mình. 
+Đây là mã OTP của bạn, vui lòng không chia sẻ mã này cho bất kỳ ai.
+Cảm ơn bạn đã tin tưởng đồng hành cùng Thinksync. 
+Trân trọng,
+        $username
+        ******$otp******",
         ];
 
         // Gửi email

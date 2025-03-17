@@ -43,6 +43,24 @@
     <p v-if="loading">Đang tải dữ liệu bài thi...</p>
     <p v-else-if="error">{{ error }}</p>
   </div>
+
+  <div v-if="showResult" class="result-modal">
+    <div class="result-box">
+    <h2>KẾT QUẢ</h2>
+      <div class="result-content">
+        <div class="result-score">
+          <p>Điểm</p>
+          <p>{{ resultScore }}/{{ exam?.questions.length }}</p>
+        </div>
+        <div class="result-correct">
+          <p>Bạn đã làm đúng</p>
+          <p>{{ resultScore }}/{{ exam?.questions.length }} câu</p>
+        </div>
+      </div>
+      <button @click="closeResult">Đóng</button>
+    </div>
+  </div>
+
 </template>
 
 <script>
@@ -58,7 +76,10 @@ export default {
       timeRemaining: 1800, // 30 phút
       testDate: new Date(),
       answerLabels: ["A", "B", "C", "D"],
-      userAnswers: {} 
+      userAnswers: {},
+      user: null,      
+      showResult: false,
+      resultScore: 0,
     };
   },
   async created() {
@@ -72,19 +93,20 @@ export default {
         return;
       }
 
-      // Lấy user_id từ localStorage
-      const userId = localStorage.getItem("user_id");
-      if (!userId) {
+      // Lấy thông tin user từ session
+      const { data: userData } = await axios.get("/api/auth/user");
+      this.user = userData;
+      if (!this.user || !this.user.id) {
         this.error = "Không tìm thấy thông tin người dùng!";
         this.loading = false;
         return;
       }
 
       // Gửi request để bắt đầu bài thi
-      await axios.post(`http://127.0.0.1:8000/api/exams/start/${examId}`, { user_id: userId });
+      await axios.post(`/api/exams/start/${examId}`);
 
       // Lấy thông tin bài thi
-      const response = await axios.get(`http://127.0.0.1:8000/api/exams/${examId}`);
+      const response = await axios.get(`/api/exams/${examId}`);
       this.exam = response.data;
 
       if (typeof this.exam.questions === "string") {
@@ -118,20 +140,19 @@ export default {
 
       if (!confirm("Bạn có chắc chắn muốn nộp bài?")) return;
 
-      const userId = localStorage.getItem("user_id");
-      if (!userId) {
+      if (!this.user || !this.user.id) {
         alert("Không tìm thấy ID người dùng!");
         return;
       }
 
       const payload = {
-        user_id: userId,
         answers: this.userAnswers,
       };
-      console.log("Payload gửi đi:", payload); // 🛠 Kiểm tra dữ liệu trước khi gửi
+
       try {
-        const response = await axios.post(`http://127.0.0.1:8000/api/exams/${this.exam.id}/submit`, payload);
-        alert(`Bài thi đã nộp! Điểm: ${response.data.score}`);
+        const response = await axios.post(`/api/exams/${this.exam.id}/submit`, payload);
+        this.resultScore = response.data.score;
+        this.showResult = true;
       } catch (error) {
         console.error("Lỗi khi nộp bài:", error);
         alert("Đã có lỗi xảy ra khi nộp bài. Vui lòng thử lại.");
@@ -140,20 +161,23 @@ export default {
     async autoSubmitExam() {
       if (!this.exam) return;
 
-      const userId = localStorage.getItem("user_id");
-      if (!userId) return;
+      if (!this.user || !this.user.id) return;
 
       const payload = {
-        user_id: userId,
         answers: this.userAnswers,
       };
 
       try {
-        await axios.post(`http://127.0.0.1:8000/api/exams/${this.exam.id}/submit`, payload);
+        await axios.post(`/api/exams/${this.exam.id}/submit`, payload);
         alert("Hết giờ! Bài thi đã được tự động nộp.");
+        window.location.href = "/test";
       } catch (error) {
         console.error("Lỗi khi tự động nộp bài:", error);
       }
+    },
+    closeResult() {
+      this.showResult = false;
+      window.location.href = "/tests";
     },
     formatDate(date) {
       return date.toLocaleDateString("vi-VN", {
