@@ -244,7 +244,6 @@ button {
   border: none;
   border-radius: 6px;
   background: #ff7b7b;
-  color: white;
   cursor: pointer;
   transition: background 0.3s ease-in-out;
 }
