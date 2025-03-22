@@ -339,7 +339,7 @@ onUnmounted(() => {
 }
   
 /* Hiệu ứng sóng khi nhấn */
-.search-actions buttonn:active::after {
+.search-actions button:active::after {
     content: "";
     position: absolute;
     top: 50%;

@@ -46,3 +46,7 @@ Route::get('/calendar', function () {
 Route::get('/notes', function () {
     return view('note');
 });
+
+Route::get('/UserManagement', function () {
+    return view('UserManagement');
+})->name('UserManagement');
