@@ -57,7 +57,7 @@
           <p>{{ resultScore }}/{{ exam?.questions.length }} câu</p>
         </div>
       </div>
-      <button @click="closeResult">Đóng</button>
+      <button class="btn-close" @click="closeResult">Đóng</button>
     </div>
   </div>
 

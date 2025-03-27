@@ -19,12 +19,12 @@ border-bottom: 5px solid #000;
 }
 
 #profile .title{
-font-family: 'Oleo Script';
 font-size: 3.2rem;
 width: 55%;
 }
 
 #profile .title a{
+  font-family: 'Oleo Script';
     text-decoration: none;
     color: #000;
 }
