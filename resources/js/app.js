@@ -9,6 +9,7 @@ import test from './components/TestFile/test.vue';
 import Testdoc from './components/TestFile/TestDoc.vue';
 import calendar from './components/calendar.vue';
 import note from './components/note.vue';
+import UserManagement from './components/UserManagement.vue';
 
 
 import '../css/homepage.css';
@@ -21,6 +22,8 @@ import '../css/TestFile/testdoc.css'
 import '../css/Auth/ProfileUser.css';
 import '../css/calendar.css';
 import '../css/note.css';
+import '../css/UserManagement.css';
+
 
 createApp(homepage).mount('#app');
 createApp(Login).mount('#login');
@@ -32,3 +35,4 @@ createApp(Testdoc).mount('#testdoc');
 createApp(Profile).mount('#profile');
 createApp(calendar).mount('#calendar');
 createApp(note).mount('#note');
+createApp(UserManagement).mount('#UserManagement');

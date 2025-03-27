@@ -77,7 +77,6 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
   border: 1px ;
   overflow: hidden;
   position: relative;
-  animation: fadeInScale 0.8s ease-out forwards;
   min-height: 330px;
   z-index: -3;
 }

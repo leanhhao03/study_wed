@@ -261,7 +261,7 @@ onUnmounted(() => {
     align-items: stretch;
     background: white;
     padding: 15px;
-    background: transparent;
+    background: linear-gradient(120deg, #FAD0C4 20%, #C3EBEA 80%);
 }
 
 .search-input {
@@ -300,7 +300,84 @@ onUnmounted(() => {
 }
 
 .search-actions button {
+    background-color: #edd2ff;
     padding: 5px 10px;
     cursor: pointer;
+    position: relative;
+    overflow: hidden; /* Đảm bảo hiệu ứng không tràn ra ngoài */
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    
+}
+
+.search-actions button::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background-color: #d28eff;
+    transition: transform 0.4s ease-in-out;
+    border-radius: 50%;
+    z-index: 0;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.7;
+    z-index: -1;
+}
+  
+.search-actions button:hover::before {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+}
+
+.search-actions button:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px);
+    color: #1a1a2e;
+}
+  
+/* Hiệu ứng sóng khi nhấn */
+.search-actions button:active::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: ripple 0.5s ease-out;
+    z-index: 1;
+}
+
+/* Hiệu ứng sáng nhẹ */
+.search-actions button::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-20deg);
+    transition: left 0.6s ease-in-out;
+}
+
+.search-actions button:hover::after {
+    left: 100%;
+}
+@keyframes ripple {
+    to {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
 }
 </style>
