@@ -27,7 +27,7 @@
                         <div><font-awesome-icon :icon="item.icon" class="icon" /></div>
                         <div class="card-content">
                             <h2>{{ item.title }}</h2>
-                            <h1>20</h1>                        
+                            <h1></h1>                        
                         </div>
                     </div>
                 </div>
@@ -70,12 +70,12 @@
                 <div class="EditTestForm">
                     <h2>Tải lên đề thi</h2>
                     <div class="input-box">
-                        <label for="subject">Môn học</label>
-                        <input type="text" v-model="testSubject">              
+                        <label for="title">Tiêu đề</label>
+                        <input type="text" v-model="testTitle">              
                     </div>
                     <div class="input-box">
-                        <label for="question">Số lượng câu hỏi</label>
-                        <input type="number" v-model="questionCount">              
+                        <label for="subject">Môn học</label>
+                        <input type="text" v-model="testSubject">              
                     </div>
                     <div class="input-box">
                         <label for="time">Thời gian (phút)</label>
@@ -128,24 +128,24 @@
 
             <div v-if="selectedDocument" class="detail-container" @click.self="selectedDocument = null">
                 <div class="detail-area">
-        
                     <div class="viewer">
-                        
+                        <iframe v-if="selectedPdf" 
+                        :src="`${selectedPdf}#toolbar=0`"
+
+                        frameborder="0"></iframe>
                     </div>
                     <div class="box">
                         <div class="info">
-                            <p>Tiêu đề: {{ selectedDocument.documentTitle }}</p>
+                            <p>Tiêu đề: {{ selectedDocument.title }}</p>
                             <p>Môn học: {{ selectedDocument.subject }}</p>
-                            <p>Ngày đăng tải: {{ selectedDocument.uploadDate }}</p>
-                            <p>Dung lượng: </p>
+                            <p>Ngày đăng tải: {{ selectedDocument.created_at }}</p>
                         </div>
                         <div class="DetailDocButton">
-                            <button class="dlt-btn">Xoá</button>
+                            <button class="dlt-btn" @click="deleteDocument(selectedDocument.id)">Xoá</button>
                         </div>
                     </div>
                 </div>
             </div>
-
             <!-- Bảng tài liệu -->
             <div v-if="currentTable === 'document'" class="table-container">
                 <table class="user-table">
@@ -161,21 +161,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(doc, index) in documents" :key="index" @click="selectedDocument = doc" class="clickable-row" :class="index % 2 === 0 ? 'even' : 'odd'">
-                            <td>{{ index + 1 }}</td>
-                            <td>{{ doc.uploader }}</td>
-                            <td>{{ doc.id }}</td>
-                            <td>{{ doc.subject }}</td>
-                            <td>{{ doc.documentTitle }}</td>
-                            <td>{{ doc.uploadDate }}</td>
-                            <td>
-                                <FontAwesomeIcon 
-                                    :icon="['fas', 'trash-can']" 
-                                    class="delete-icon" 
-                                    :class="{ hidden: !showDeleteIcons }" 
-                                />
-                            </td>
-                        </tr>
+                   <tr v-for="(doc, index) in documents" :key="index" @click="selectDocument(doc)" class="clickable-row" :class="index % 2 === 0 ? 'even' : 'odd'">
+                        <td>{{ index + 1 }}</td>
+                        <td>{{ doc.user.name }}</td>
+                        <td>{{ doc.id }}</td>
+                        <td>{{ doc.subject }}</td>
+                        <td>{{ doc.title }}</td>
+                        <td>{{ doc.created_at }}</td>
+                        <td>
+                            <FontAwesomeIcon 
+                                :icon="['fas', 'trash-can']" 
+                                class="delete-icon" 
+                                :class="{ hidden: !showDeleteIcons }" 
+                            />
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -191,11 +191,7 @@
                                 <input v-if="isEditingTest" type="text" v-model="selectedTest.subject"/>
                                 <span v-else>{{ selectedTest.subject }}</span>
                             </p>
-                            <p>Ngày đăng tải: {{ selectedTest.uploadDate }}</p>
-                            <p>Dung lượng: 
-                                <input v-if="isEditingTest" type="text" v-model="selectedTest.fileSize" />
-                                <span v-else>{{ selectedTest.fileSize }}</span>
-                            </p>
+                            <p>Ngày đăng tải: {{ selectedTest.created_at }}</p>
                         </div>
                         <div class="DetailTestButton">
                             <button class="edit-btn" @click="toggleEditTest">{{ isEditingTest ? 'Lưu' : 'Sửa' }}</button>
@@ -210,8 +206,8 @@
                     <thead>
                         <tr>
                             <th>SỐ TT</th>
-                            <th>NGƯỜI ĐĂNG</th>
                             <th>ID</th>
+                            <th>Tiêu Đề</th>
                             <th>MÔN HỌC</th>
                             <th>SỐ LƯỢNG CÂU HỎI</th>
                             <th>THỜI GIAN</th>
@@ -222,12 +218,12 @@
                     <tbody>
                         <tr v-for="(test, index) in test" :key="index" @click="selectedTest = test" class="clickable-row" :class="index % 2 === 0 ? 'even' : 'odd'">
                             <td>{{ index + 1 }}</td>
-                            <td>{{ test.uploader }}</td>
                             <td>{{ test.id }}</td>
+                            <td>{{ test.title }}</td>
                             <td>{{ test.subject }}</td>
-                            <td>{{ test.questionCount }}</td>
-                            <td>{{ test.time }}</td>
-                            <td>{{ test.uploadDate }}</td>
+                            <td>{{ test.total_questions }}</td>
+                            <td>{{ test.duration }}</td>
+                            <td>{{ test.created_at }}</td>
                             <td>
                                 <FontAwesomeIcon 
                                     :icon="['fas', 'trash-can']" 
@@ -246,17 +242,24 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import axios from "axios";
+import { ref, onMounted } from "vue";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faMagnifyingGlass, faUser , faClipboardList, faFileAlt, faTrashCan, faPlus } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faMagnifyingGlass, faUser , faFileAlt, faClipboardList, faPlus, faTrashCan);
+const stats = [
+    { title: "Người dùng", icon: ["fas", "user"], key: "user" },
+    { title: "Tài liệu", icon: ["fas", "file-alt"], key: "document" },
+    { title: "Đề thi", icon: ["fas", "clipboard-list"], key: "test" },
+];
+
 const currentModal = ref("");
 const selectedDocument = ref(null);
 const selectedTest = ref(null);
-
-library.add(faMagnifyingGlass, faUser , faFileAlt, faClipboardList, faPlus, faTrashCan);
-
 const showSearchBar = ref(false);
+const selectedPdf = ref("");
 
 const toggleSearchBar = () => {
     if (currentTable.value === 'document' || currentTable.value === 'test') {
@@ -273,11 +276,6 @@ document.addEventListener("click", function (event) {
     }
 });
 
-const stats = [
-    { title: "Người dùng", icon: ["fas", "user"], key: "user" },
-    { title: "Tài liệu", icon: ["fas", "file-alt"], key: "document" },
-    { title: "Đề thi", icon: ["fas", "clipboard-list"], key: "test" },
-];
 
 const openModal = () => {
     if (currentTable.value === "document") {
@@ -300,19 +298,41 @@ const showModal = ref(false);
 const documentTitle = ref("");
 const subject = ref("");
 const fileName = ref("");
-const users = ref([
-    { name: "Nguyễn Văn A", id: "0XXXXX", email: "nguyenvxx@gmail.com", gender: "Nam", birthDate: "10/10/2010" },
-    { name: "Trần Thị B", id: "1YYYYY", email: "tranthib@gmail.com", gender: "Nữ", birthDate: "15/06/2012" }
-]);
+const users = ref([]);
 
+const fetchUsers = async () => {
+    try {
+        const response = await axios.get("/api/auth/fecthUser");
+        users.value = response.data;
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách người dùng:", error);
+    }
+};
 const documents = ref([]);
+const fetchDoc = async () => {
+    try {
+        const response = await axios.get("/api/documents/getFile");
+        documents.value = response.data;
+        console.log(response.data)
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách tài liệu:", error);
+    }
+};
 
 const test = ref([]);
+const fetchTest = async () => {
+    try {
+        const response = await axios.get("/api/exams");
+        test.value = response.data;
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách Đề thi:", error);
+    }
+};
 
 const onFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        fileName.value = file.name;
+    file.value = event.target.files[0];
+    if (file.value) {
+        fileName.value = file.value.name;
     }
 };
 
@@ -327,7 +347,7 @@ const validateAndSave = () => {
         }
         saveDocument();
     } else if (currentModal.value === "test") {
-        if (!testSubject.value.trim() || !questionCount.value || !time.value || !fileName.value) {
+        if (!testSubject.value.trim() || !time.value || !fileName.value) {
             errorMessage.value = "Vui lòng nhập đủ thông tin và tải tệp lên!";
             setTimeout(() => (errorMessage.value = ""), 3000);
             return;
@@ -337,39 +357,79 @@ const validateAndSave = () => {
     currentModal.value = "";
 };
 
-const saveDocument = () => {
-    documents.value.push({
-        uploader: "admin",
-        id: `DOC${documents.value.length + 1}`,
-        subject: subject.value,
-        documentTitle: documentTitle.value,
-        uploadDate: new Date().toLocaleDateString(),
-    });
-    documentTitle.value = "";
-    subject.value = "";
-    fileName.value = "";
-    showModal.value = false;
+const saveDocument = async () => {
+    if (!file.value) {
+        errorMessage.value = "Vui lòng chọn file!";
+        setTimeout(() => (errorMessage.value = ""), 3000);
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file.value);
+    formData.append("subject", subject.value);
+    formData.append("title_file", documentTitle.value);
+
+    try {
+        const response = await axios.post("/api/documents/upload", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        if (response.data.file) {
+            documents.value.push(response.data.file);
+        }
+
+        // Reset form
+        documentTitle.value = "";
+        subject.value = "";
+        fileName.value = "";
+        file.value = null;
+        currentModal.value = "";
+    } catch (error) {
+        console.error("Lỗi khi tải file lên:", error);
+        errorMessage.value = "Có lỗi xảy ra khi tải file!";
+        setTimeout(() => (errorMessage.value = ""), 3000);
+    }
 };
 
+const file = ref(null)
 const testSubject = ref("");
-const questionCount = ref("");
+const testTitle = ref("");
 const time = ref("");
 
-const saveTest = () => {
-    test.value.push({
-        uploader: "admin",
-        id: `TEST${test.value.length + 1}`,
-        subject: testSubject.value,
-        questionCount: questionCount.value,
-        time: time.value,
-        uploadDate: new Date().toLocaleDateString(),
-        fileSize: "0 KB"
-    });
+const saveTest = async () => {
+    if (!file.value) {
+        errorMessage.value = "Vui lòng chọn file!";
+        setTimeout(() => (errorMessage.value = ""), 3000);
+        return;
+    }
 
-    testSubject.value = "";
-    questionCount.value = "";
-    time.value = "";
-    fileName.value = "";
+    const formData = new FormData();
+    formData.append("file", file.value);
+    formData.append("subject", testSubject.value);
+    formData.append("title", testTitle.value);
+    formData.append("duration", time.value);
+
+    try {
+        const response = await axios.post("/api/exams/upload", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        if (response.data.test) {
+            test.value.push(response.data.test); 
+        }
+
+        // Reset form
+        testTitle.value = "";
+        testSubject.value = "";
+        time.value = "";
+        fileName.value = "";
+        file.value = null;
+        currentModal.value = "";
+    } catch (error) {
+        console.error("Lỗi khi tải đề thi lên:", error);
+        errorMessage.value = "Có lỗi xảy ra khi tải đề thi!";
+        setTimeout(() => (errorMessage.value = ""), 3000);
+    }
 };
 
 const isEditingTest = ref(false);
@@ -378,4 +438,36 @@ const toggleEditTest = () => {
     if (isEditingTest.value) {  }
     isEditingTest.value = !isEditingTest.value;
 };
+
+const deleteDocument = async (id) => {
+    if (!confirm("Bạn có chắc chắn muốn xóa tài liệu này?")) return;
+
+    try {
+        await axios.delete(`/api/documents/${id}`);
+        documents.value = documents.value.filter(doc => doc.id !== id);
+    } catch (error) {
+        console.error("Lỗi khi xóa tài liệu:", error);
+        errorMessage.value = "Không thể xóa tài liệu!";
+        setTimeout(() => (errorMessage.value = ""), 3000);
+    }
+};
+const getFullPdf = async (id) => {
+    try {
+        const response = await axios.get(`/api/documents/full/${id}`);
+        selectedPdf.value = response.data.file_url;
+    } catch (error) {
+        console.error("Lỗi khi mở tài liệu:", error);
+    }
+};
+const selectDocument = async (doc) => {
+    selectedDocument.value = doc;
+    await getFullPdf(doc.id);
+};
+
+
+onMounted(() => {
+    fetchUsers();
+    fetchDoc();
+    fetchTest();
+});
 </script>

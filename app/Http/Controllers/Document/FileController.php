@@ -198,7 +198,6 @@ class FileController extends Controller
     {
         $subject = $request->input('subject');
     
-        // Lấy danh sách file theo subject, nếu không có thì lấy tất cả
         $query = Document::select('Dcm_id', 'dcm_title', 'dcm_file_path', 'dcm_preview_path', 'subject');
     
         if ($subject) {
@@ -264,4 +263,23 @@ class FileController extends Controller
         $subjects = Document::select('subject')->distinct()->pluck('subject');
         return response()->json($subjects);
     }
+    public function deleteDocument($id)
+        {
+            try {
+                // Tìm tài liệu theo ID
+                $document = Document::findOrFail($id);
+
+                // Xóa file khỏi storage
+                if ($document->file_path) {
+                    Storage::disk('public')->delete($document->file_path);
+                }
+
+                // Xóa tài liệu khỏi database
+                $document->delete();
+
+                return response()->json(['message' => 'Xóa tài liệu thành công!'], 200);
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Lỗi khi xóa tài liệu!', 'error' => $e->getMessage()], 500);
+            }
+        }
 }

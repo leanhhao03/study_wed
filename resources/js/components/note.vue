@@ -67,12 +67,12 @@
                 <div v-else>
                     <table class="note-table">
                         <tbody>
-                            <tr v-for="note in notes" :key="note.id">
+                            <tr v-for="note in notes" :key="note.id" @click="editNote(note)">
                                 <td>{{ note.title }}</td>
                                 <td>{{ formatDate(note.createdAt) }}</td>
                                 <td>{{ note.content }}</td>
                                 <td v-if="showTrashIcons">
-                                    <button @click="deleteNote(note.id)" class="delete-button">
+                                    <button @click.stop="deleteNote(note.id)" class="delete-button">
                                         <FontAwesomeIcon :icon="['fas', 'trash']" class="trash-icon" />
                                     </button>
                                 </td>
@@ -96,7 +96,7 @@ library.add(faUser, faBook, faPen, faCalendarAlt, faPlus, faTrash);
 
 const leftMenuButtons = ref([
     { text: "Cá nhân", icon: "user", link: "/profile" },
-    { text: "Ôn tập", icon: "book", link: "/document" },
+    { text: "Ôn tập", icon: "book", link: "/documents" },
     { text: "Thi thử", icon: "pen", link: "/test" },
     { text: "Đặt lịch", icon: "calendar-alt", link: "/calendar" },
 ]);
@@ -117,6 +117,12 @@ const isExpanded = ref(false);
 const recentNotes = ref([]);
 const userName = ref(""); 
 const notes = ref([]);    
+const selectedNoteId = ref(null);
+
+const editNote = (note) => {
+    fetchNoteById(note.id);
+};
+
 
 const expandInput = () => {
     isExpanded.value = true;
@@ -126,7 +132,9 @@ const collapseInput = () => {
     isExpanded.value = false;
     searchQuery.value = "";
     noteContent.value = "";
+    selectedNoteId.value = null;
 };
+
 const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('vi-VN', {
@@ -163,26 +171,55 @@ const fetchNotes = async () => {
     }
 };
 
+const fetchNoteById = async (id) => {
+    try {
+        const response = await axios.get(`/api/notes/${id}`, { withCredentials: true });
+        selectedNoteId.value = response.data.id;
+        searchQuery.value = response.data.title;
+        noteContent.value = response.data.content;
+        isExpanded.value = true;
+    } catch (error) {
+        console.error("Lỗi khi lấy ghi chú:", error);
+    }
+};
+
+
 
 const saveNote = async () => {
     if (!searchQuery.value || !noteContent.value) return;
 
     try {
-        const response = await axios.post("/api/notes", {
-            title: searchQuery.value,
-            content: noteContent.value,
-        }, { withCredentials: true });
+        if (selectedNoteId.value) {
+            // Gọi API cập nhật ghi chú
+            await axios.put(`/api/notes/${selectedNoteId.value}`, {
+                title: searchQuery.value,
+                content: noteContent.value,
+            }, { withCredentials: true });
 
-        // Cập nhật danh sách tất cả ghi chú
-        notes.value.unshift({
-            id: response.data.id,
-            title: response.data.title,
-            content: response.data.content,
-            createdAt: new Date(response.data.created_at),
-        });
+            // Cập nhật danh sách
+            const note = notes.value.find(n => n.id === selectedNoteId.value);
+            if (note) {
+                note.title = searchQuery.value;
+                note.content = noteContent.value;
+            }
 
-        // Cập nhật ghi chú gần đây (2 ghi chú mới nhất)
-        recentNotes.value = notes.value.slice(0, 2);
+            selectedNoteId.value = null;
+        } else {
+            // Gọi API tạo mới nếu không có selectedNoteId
+            const response = await axios.post("/api/notes", {
+                title: searchQuery.value,
+                content: noteContent.value,
+            }, { withCredentials: true });
+
+            notes.value.unshift({
+                id: response.data.id,
+                title: response.data.title,
+                content: response.data.content,
+                createdAt: new Date(response.data.created_at),
+            });
+
+            recentNotes.value = notes.value.slice(0, 2);
+        }
 
         collapseInput();
     } catch (error) {
@@ -190,29 +227,12 @@ const saveNote = async () => {
     }
 };
 
-
 const deleteNote = async (id) => {
     try {
         await axios.delete(`/api/notes/${id}`, { withCredentials: true });
         recentNotes.value = recentNotes.value.filter(note => note.id !== id);
     } catch (error) {
         console.error("Lỗi khi xóa ghi chú:", error);
-    }
-};
-
-const updateNote = async (id, newTitle, newContent) => {
-    try {
-        const response = await axios.put(`/api/notes/${id}`, {
-            title: newTitle,
-            content: newContent,
-        }, { withCredentials: true });
-
-        const index = recentNotes.value.findIndex(note => note.id === id);
-        if (index !== -1) {
-            recentNotes.value[index] = response.data;
-        }
-    } catch (error) {
-        console.error("Lỗi khi cập nhật ghi chú:", error);
     }
 };
 

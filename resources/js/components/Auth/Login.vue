@@ -70,17 +70,23 @@ const handleLogin = async () => {
   }
 
   try {
-    const response = await axios.post("http://127.0.0.1:8000/api/auth/login", formData.value, {
+    const response = await axios.post("api/auth/login", formData.value, {
       withCredentials: true,
     });
+    const user = response.data;
 
     if (response.status === 204 || response.status === 200) {
       successMessage.value = "Đăng nhập thành công!";
       localStorage.setItem('auth', 'true');
+      localStorage.setItem('user_role', user.role);
       if (rememberMe.value) localStorage.setItem('remember_email', formData.value.email);
 
       setTimeout(() => {
-        window.location.reload();
+        if(user.role == 1){
+          window.location.href = '/admin';
+        }else{
+          window.location.reload();
+        }
       }, 500);
     }
   } catch (error) {
@@ -90,25 +96,3 @@ const handleLogin = async () => {
 };
 
 </script>
-
-<style scoped>
-.password-container {
-  display: flex;
-  align-items: center;
-}
-
-.toggle-password-icon {
-  cursor: pointer;
-  margin-left: 8px;
-}
-
-.error-message {
-  color: red;
-  margin-top: 10px;
-}
-
-.success-message {
-  color: green;
-  margin-top: 10px;
-}
-</style>

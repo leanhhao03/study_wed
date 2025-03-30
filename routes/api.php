@@ -13,6 +13,8 @@ use App\Http\Controllers\Exam\ExamResultController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\Verify\ResetPasswordController;
+use App\Models\Document;
+use App\Models\Exam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +24,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
     Route::post('edit/{id}', [ModifyAuthenticate::class, 'updateProfile']);
     Route::get('/user', [AuthenticatedSessionController::class, 'getUser'])->middleware('auth');
+    Route::get('/fecthUser', [AuthenticatedSessionController::class, 'getNonZeroRoleUsers']);
 });
 
 //Mail Controller
@@ -31,15 +34,31 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset']);
 //file controller
 Route::prefix('documents')->group(function () {
     // Upload và chuyển đổi file
-    Route::post('/upload', [FileController::class, 'uploadAndConvert'])->name('documents.upload');
+    Route::post('/upload', [FileController::class, 'uploadAndConvert']);
     // Lấy danh sách tất cả các file đã upload
-    Route::get('/all', [FileController::class, 'getFile'])->name('documents.getAll');
+    Route::get('/all', [FileController::class, 'getFile']);
     //get preview
     Route::get('/preview', [FileController::class, 'getPreviews']);
     //lấy file theo subject
     Route::get('/subjects', [FileController::class, 'getSubjects']);
     // Lấy file đầy đủ theo ID
-    Route::get('/full/{id}', [FileController::class, 'getFullFile'])->name('documents.getFull');
+    Route::get('/full/{id}', [FileController::class, 'getFullFile']);
+    Route::delete('/{id}', [FileController::class, 'deleteDocument']);
+    Route::get('getFile', function(){
+          $doc = Document::with('user:id,name')->get();
+    // Format lại `created_at`
+    $formattedDocs = $doc->map(function ($document) {
+        return [
+            'id' => $document->Dcm_id,
+            'subject' => $document->subject,
+            'title' => $document->dcm_title,
+            'user' => $document->user, // Giữ nguyên thông tin user
+            'created_at' => $document->created_at->format('d/m/Y')
+        ];
+    });
+
+    return response()->json($formattedDocs, 200);     
+    });
 });
 
 
@@ -49,6 +68,7 @@ Route::prefix('/exams')->group(function () {
     Route::get('/', [ExamController::class, 'index']);
     Route::get('/{id}', [ExamController::class, 'show']);
     Route::post('/', [ExamController::class, 'create']);
+    Route::post('/upload', [ExamController::class, 'createFromDocx']);
     // Bắt đầu bài thi
     Route::post('/start/{id}', [ExamController::class, 'startExam']);
     // Lấy bài thi theo môn học
@@ -66,7 +86,7 @@ Route::prefix('/exams')->group(function () {
     Route::post('notes', [NoteController::class, 'store']); // Thêm ghi chú mới
     Route::get('/notes/{id}', [NoteController::class, 'show']); // Xem chi tiết một ghi chú
     Route::put('/notes/{id}', [NoteController::class, 'update']); // Cập nhật ghi chú
-    Route::delete('/notes/{id}', [NoteController::class, 'destroy']); // Xóa ghi chú
+    Route::delete('/notes/{id}', [NoteController::class, 'destroy']); 
 
 //Apponiterment Controller
 Route::prefix('/appointments')->middleware('auth')->group(function () {

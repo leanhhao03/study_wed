@@ -47,6 +47,6 @@ Route::get('/notes', function () {
     return view('note');
 });
 
-Route::get('/UserManagement', function () {
+Route::get('/admin', function () {
     return view('UserManagement');
 })->name('UserManagement');

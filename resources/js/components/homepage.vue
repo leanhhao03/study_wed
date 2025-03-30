@@ -10,7 +10,7 @@
         </a>
       </div>
       <div class="noti-login" v-else>
-        <div class="noti">
+        <div class="noti" v-if="isLoggedIn">
           <button>
             <FontAwesomeIcon :icon="['fas', 'bell']" class="icon-bell" />
           </button>
@@ -33,10 +33,21 @@
       <div class="top-grid">
         <div class="reminder-card">
           <p>Bạn có lịch học nè!</p>
-          <div class="reminder-details">
-            <span class="label">Thời gian</span>
-            <span class="label">Chủ đề</span>
-          </div>
+          <table v-if="appointments.length > 0" class="appointment-table">
+            <thead>
+              <tr>
+                <th>Thời gian</th>
+                <th>Nội dung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(appointment, index) in appointments" :key="appointment.id">
+                <td>{{ formatDate(appointment.end_time) }}</td>
+                <td>{{ appointment.description }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-else class="no-reminder">Không có lịch học sắp tới.</div>
         </div>
         <div v-if="recentNotes.length === 0" class="empty-note">❌ Không có ghi chú nào!</div>
         <div v-else class="recent-notes">
@@ -96,11 +107,11 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBell, faBook, faPen, faBookOpen, faCalendarAlt, faHome, faEye, faEyeSlash, faHeart } from '@fortawesome/free-solid-svg-icons';
+import { faBell, faBook, faPen, faBookOpen, faCalendarAlt, faHome, faEye, faEyeSlash, faHeart, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as faHeartRegular } from '@fortawesome/free-regular-svg-icons';
 import LoginForm from '@/components/Auth/Login.vue';
 
-library.add(faHome, faEye, faEyeSlash, faBell, faBook, faPen, faBookOpen, faCalendarAlt, faHeart, faHeartRegular);
+library.add(faHome, faEye, faEyeSlash, faBell, faBook, faPen, faBookOpen, faCalendarAlt, faHeart, faHeartRegular, faUser);
 axios.defaults.withCredentials = true;
 
 const buttons = ref([
@@ -119,6 +130,7 @@ const favorites = ref(new Set());
 const isFavorited = (id) => favorites.value.has(id);
 const selectedPdf = ref(null);
 const recentNotes = ref([]);
+const appointments = ref([]);
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -127,6 +139,25 @@ const formatDate = (dateString) => {
         month: '2-digit',
         year: 'numeric'
     });
+};
+
+const fetchAppointment = async () => {
+  try {
+    const response = await axios.get("api/appointments", {
+      withCredentials: true,
+    });
+
+    console.log("Danh sách lịch học:", response.data);
+
+    if (response.data && response.data.length > 0) {
+      appointments.value = response.data; 
+    } else {
+      appointments.value = [];
+    }
+  } catch (error) {
+    console.error("Lỗi tải lịch học:", error);
+    appointments.value = [];
+  }
 };
 
 const handleLoginSuccess = async () => {
@@ -193,6 +224,7 @@ onMounted(async () => {
       isLoggedIn.value = true;
       fetchFavorites();
       fetchNotes();
+      fetchAppointment();
     }
   } catch (error) {
     console.error("Không thể lấy thông tin người dùng:", error);

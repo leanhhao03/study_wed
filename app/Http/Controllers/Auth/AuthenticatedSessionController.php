@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -23,13 +24,14 @@ class AuthenticatedSessionController extends Controller
     $user = Auth::user();
     // Lưu user_id vào session
     session(['user_id' => $user->id]);
-
+    
     return response()->json([
         'message' => 'Đăng nhập thành công',
         'user_id' => $user->id,
         'name' => $user->name,
         'email' => $user->email,
-        'picture' => $user->picture
+        'picture' => $user->picture,
+        'role' => $user->role
     ], 200);
     }
 
@@ -54,6 +56,12 @@ class AuthenticatedSessionController extends Controller
             'created_at' => $user->created_at->format('d/m/Y')
         ], 200);
     }
+    public function getNonZeroRoleUsers()
+    {
+        $users = User::where('role', '!=', 1)->get();
+        return response()->json($users, 200);
+    }
+
 
     /**
      * Đăng xuất user.
